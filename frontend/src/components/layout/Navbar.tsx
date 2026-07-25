@@ -1,0 +1,131 @@
+import { Link, useNavigate } from "react-router-dom"
+import { LogOut, Plus, Search, User } from "lucide-react"
+import { useState } from "react"
+import { useAuth } from "@/context/AuthContext"
+import { Avatar } from "@/components/user/Avatar"
+import { Button } from "@/components/forms/Button"
+
+export function Navbar() {
+  const { isLoggedIn, user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    setMenuOpen(false)
+    navigate("/")
+  }
+
+  return (
+    <header className="border-b border-border bg-surface">
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+        <Link to="/" className="text-xl font-semibold tracking-tight text-textPrimary">
+          Thrifted
+        </Link>
+
+        <Link
+          to="/search"
+          className="ml-auto flex items-center gap-2 rounded px-3 py-2 text-sm text-textSecondary transition-colors hover:text-textPrimary sm:ml-6"
+        >
+          <Search className="size-4" />
+          <span className="hidden sm:inline">Kërko</span>
+        </Link>
+
+        <div className="ml-auto flex items-center gap-2">
+          {isLoggedIn ? (
+            <>
+              <Link
+                to="/create-product"
+                className="hidden sm:flex"
+                aria-label="Shto produkt"
+              >
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="size-4" />
+                  Shit
+                </Button>
+              </Link>
+
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen((o) => !o)}
+                  className="flex items-center rounded-full transition-opacity hover:opacity-80"
+                  aria-label="Menuja e profilit"
+                  aria-expanded={menuOpen}
+                >
+                  <Avatar
+                    src={user?.profile_photo_url}
+                    name={user?.full_name ?? user?.username}
+                    size="md"
+                  />
+                </button>
+
+                {menuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <div className="absolute right-0 top-12 z-20 w-52 overflow-hidden rounded-lg border border-border bg-surface py-1 shadow-cardHover">
+                      <MenuLink to="/me" icon={<User className="size-4" />} onClick={() => setMenuOpen(false)}>
+                        Profili im
+                      </MenuLink>
+                      <MenuLink
+                        to="/create-product"
+                        icon={<Plus className="size-4" />}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Shit një produkt
+                      </MenuLink>
+                      <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-danger transition-colors hover:bg-background"
+                      >
+                        <LogOut className="size-4" />
+                        Dil
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Hyr
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm">Regjistrohu</Button>
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  )
+}
+
+function MenuLink({
+  to,
+  icon,
+  children,
+  onClick,
+}: {
+  to: string
+  icon: React.ReactNode
+  children: React.ReactNode
+  onClick: () => void
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="flex items-center gap-2 px-4 py-2.5 text-sm text-textPrimary transition-colors hover:bg-background"
+    >
+      {icon}
+      {children}
+    </Link>
+  )
+}
