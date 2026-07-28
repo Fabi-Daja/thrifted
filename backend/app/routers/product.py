@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 import uuid
 
 from app.core.database import get_db
@@ -28,7 +28,7 @@ def get_products(
     page: int = 1,
     page_size: int = 20,
 ):
-    query = db.query(Product).filter(Product.status == "active")
+    query = db.query(Product).options(selectinload(Product.images)).filter(Product.status == "active")
 
     if category:
         query = query.filter(Product.category == category)
@@ -80,7 +80,7 @@ def create_product(data:ProductCreate,db:Session=Depends(get_db),current_user:Us
 
 @router.get("/{product_id}",response_model=ProductResponse)
 def get_product(product_id:uuid.UUID,db:Session=Depends(get_db)):
-    product=db.query(Product).filter(Product.id==product_id).first()
+    product=db.query(Product).options(selectinload(Product.images)).filter(Product.id==product_id).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Product not found")
     return product
@@ -105,7 +105,7 @@ def archieve_product(product_id:uuid.UUID,db:Session=Depends(get_db),current_use
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Product not found")
     if product_archived.owner_id!=current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not authorized to archieve this product")
-    product_archived.status="archieved"
+    product_archived.status="archived"
     db.commit()
     db.refresh(product_archived)    
     return product_archived

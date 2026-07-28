@@ -1,8 +1,9 @@
 import uuid
 from enum import Enum
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
+from app.schemas.product_image import ProductImageResponse
 
 
 class SellingType(str, Enum):
@@ -49,6 +50,7 @@ class ProductResponse(BaseModel):
     selling_type: str
     status: str
     created_at: datetime
+    images: List[ProductImageResponse] = []
 
     class Config:
         from_attributes = True

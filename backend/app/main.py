@@ -8,7 +8,17 @@ from .routers.bid import router as bid_router
 from .routers.order import router as order_router
 from .routers.product_image import router as product_images_router
 from .routers.review import router as reviews_router, review_public_router
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 app.include_router(users_router)
