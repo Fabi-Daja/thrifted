@@ -15,6 +15,22 @@ export function useProductBids(productId: string, enabled: boolean) {
   })
 }
 
+export function useMyBids(enabled: boolean) {
+  return useQuery({
+    queryKey: bidKeys.mine,
+    queryFn: () => bidsApi.mine(),
+    enabled,
+  })
+}
+
+// Krijon sesionin e pagesës me Stripe për një ofertë të pranuar; kthen
+// { checkout_url } dhe ridrejtimi bëhet nga kompononti.
+export function useBidCheckout() {
+  return useMutation({
+    mutationFn: (bidId: string) => bidsApi.checkout(bidId),
+  })
+}
+
 export function useCreateBid(productId: string) {
   const qc = useQueryClient()
   return useMutation({

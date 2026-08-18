@@ -1,17 +1,27 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom"
-import { useAuth } from "@/context/AuthContext"
-import { LoadingSpinner } from "@/components/feedback/LoadingSpinner"
+import { useEffect, type ReactNode } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useAuth } from "@/context/AuthContext";
+import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 
-export function ProtectedRoute() {
-  const { isLoggedIn, isLoading } = useAuth()
-  const location = useLocation()
+/**
+ * Client-side auth gate. Wrap protected page bodies with <ProtectedRoute>.
+ * Preserves the original URL as ?redirect_to= so /login can send the user back.
+ */
+export function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { isLoggedIn, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname + s.location.searchStr });
 
-  if (isLoading) return <LoadingSpinner fullPage />
+  useEffect(() => {
+    if (!isLoading && !isLoggedIn) {
+      navigate({
+        to: "/login",
+        search: { redirect_to: pathname },
+        replace: true,
+      });
+    }
+  }, [isLoading, isLoggedIn, navigate, pathname]);
 
-  if (!isLoggedIn) {
-    // Preserve where the user was heading so login can redirect them back (Flow 1).
-    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
-  }
-
-  return <Outlet />
+  if (isLoading || !isLoggedIn) return <LoadingSpinner fullPage />;
+  return <>{children}</>;
 }

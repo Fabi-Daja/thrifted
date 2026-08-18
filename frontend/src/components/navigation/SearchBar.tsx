@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface SearchBarProps {
@@ -32,8 +32,21 @@ export function SearchBar({
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
         aria-label="Kërko"
-        className="h-11 w-full rounded border border-border bg-surface pl-9 pr-3 text-sm text-textPrimary placeholder:text-textSecondary/70 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="h-11 w-full rounded border border-border bg-surface pl-9 pr-8 text-sm text-textPrimary placeholder:text-textSecondary/70 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
       />
+      {value && (
+        <button
+          type="button"
+          onClick={() => {
+            setValue("")
+            onSearch("")
+          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-textSecondary transition-colors hover:bg-background hover:text-textPrimary"
+          aria-label="Pastro kërkimin"
+        >
+          <X className="size-4" aria-hidden="true" />
+        </button>
+      )}
     </form>
   )
 }

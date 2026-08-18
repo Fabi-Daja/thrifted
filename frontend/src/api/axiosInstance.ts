@@ -3,17 +3,19 @@ import { clearToken, getToken } from "@/lib/token"
 
 const baseURL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
 
+// Do not set a global Content-Type so FormData uploads get the correct boundary.
 export const axiosInstance = axios.create({
   baseURL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 })
 
 // Attach the Bearer token to every request automatically.
 axiosInstance.interceptors.request.use((config) => {
   const token = getToken()
+  // Ensure headers object exists so we can safely assign Authorization.
+  config.headers = config.headers ?? {}
   if (token) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - assign onto headers object
     config.headers.Authorization = `Bearer ${token}`
   }
   return config

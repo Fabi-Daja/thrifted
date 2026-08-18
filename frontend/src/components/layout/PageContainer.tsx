@@ -1,10 +1,10 @@
-import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface PageContainerProps {
-  children: ReactNode
-  className?: string
-  narrow?: boolean
+  children: ReactNode;
+  className?: string;
+  narrow?: boolean;
 }
 
 export function PageContainer({ children, className, narrow }: PageContainerProps) {
@@ -18,5 +18,5 @@ export function PageContainer({ children, className, narrow }: PageContainerProp
     >
       {children}
     </div>
-  )
+  );
 }

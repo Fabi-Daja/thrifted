@@ -2,8 +2,9 @@ import uuid
 from sqlalchemy import Column, String, Float, Integer, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
-from app.core.database import Base
 from sqlalchemy.orm import relationship
+
+from app.core.database import Base
 
 
 class Product(Base):

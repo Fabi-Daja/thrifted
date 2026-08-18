@@ -54,10 +54,10 @@ export function useUploadImages(productId: string) {
   })
 }
 
-export function useBuyProduct() {
-  const qc = useQueryClient()
+// Krijon sesionin e pagesës me Stripe dhe kthen { checkout_url }. Ridrejtimi
+// te Stripe bëhet nga vetë kompononti (window.location.href), jo këtu.
+export function useCheckoutProduct() {
   return useMutation({
-    mutationFn: (productId: string) => productsApi.buy(productId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: productKeys.all }),
+    mutationFn: (productId: string) => productsApi.checkout(productId),
   })
 }

@@ -6,14 +6,18 @@ interface StatusBadgeProps {
   className?: string
 }
 
-const config: Record<ProductStatus, { label: string; classes: string }> = {
+const config: Record<string, { label: string; classes: string }> = {
   active: { label: "Aktiv", classes: "bg-success/15 text-success" },
+  reserved: { label: "Rezervuar - në pritje pagese", classes: "bg-primary/15 text-primary" },
   sold: { label: "I shitur", classes: "bg-textSecondary/15 text-textSecondary" },
   archived: { label: "I arkivuar", classes: "bg-danger/15 text-danger" },
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const { label, classes } = config[status]
+  const { label, classes } = config[status] ?? {
+    label: status ?? "I panjohur",
+    classes: "bg-border text-textSecondary",
+  }
   return (
     <span
       className={cn(

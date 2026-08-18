@@ -1,14 +1,15 @@
-import { Link } from "react-router-dom"
-import { Heart } from "lucide-react"
-import { cn, formatPrice } from "@/lib/utils"
-import { SellingTypeBadge } from "./SellingTypeBadge"
-import type { ProductResponse } from "@/types"
+import { Link } from "@tanstack/react-router";
+import { Heart, ImageOff } from "lucide-react";
+import { useState } from "react";
+import { cn, formatPrice } from "@/lib/utils";
+import { SellingTypeBadge } from "./SellingTypeBadge";
+import type { ProductResponse } from "@/types";
 
 interface ProductCardProps {
-  product: ProductResponse
-  isFavorite?: boolean
-  onToggleFavorite?: (product: ProductResponse) => void
-  showFavorite?: boolean
+  product: ProductResponse;
+  isFavorite?: boolean;
+  onToggleFavorite?: (product: ProductResponse) => void;
+  showFavorite?: boolean;
 }
 
 export function ProductCard({
@@ -17,25 +18,26 @@ export function ProductCard({
   onToggleFavorite,
   showFavorite = true,
 }: ProductCardProps) {
-  const cover = product.images?.[0]?.url
+  const cover = product.images?.[0]?.url;
+  const [imageError, setImageError] = useState(false);
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card transition-shadow hover:shadow-cardHover">
-      <Link to={`/products/${product.id}`} className="block">
+      <Link to="/products/$id" params={{ id: product.id }} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-background">
-          {cover ? (
+          {cover && !imageError ? (
             <img
-              src={cover || "/placeholder.svg"}
+              src={cover}
               alt={product.title}
               loading="lazy"
+              onError={() => setImageError(true)}
               className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <img
-              src="/placeholder.svg?height=400&width=300"
-              alt={product.title}
-              className="size-full object-cover"
-            />
+            <div className="flex size-full flex-col items-center justify-center gap-2 text-textSecondary/50">
+              <ImageOff className="size-8" aria-hidden="true" />
+              <span className="text-xs">pa foto</span>
+            </div>
           )}
         </div>
       </Link>
@@ -47,12 +49,12 @@ export function ProductCard({
           aria-pressed={isFavorite}
           className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-surface/90 text-textSecondary shadow-card backdrop-blur transition-colors hover:text-primary"
         >
-          <Heart className={cn("size-4.5", isFavorite && "fill-danger text-danger")} />
+          <Heart className={cn("size-4", isFavorite && "fill-danger text-danger")} />
         </button>
       )}
 
       <div className="flex flex-1 flex-col gap-1 p-3">
-        <Link to={`/products/${product.id}`}>
+        <Link to="/products/$id" params={{ id: product.id }}>
           <h3 className="truncate text-sm font-medium text-textPrimary">{product.title}</h3>
         </Link>
         <p className="truncate text-xs text-textSecondary">
@@ -64,5 +66,5 @@ export function ProductCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

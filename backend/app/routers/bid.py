@@ -87,6 +87,18 @@ def accept_bid(
     if product.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="S'ke të drejtë të pranosh këtë ofertë")
 
+    if bid.status != "pending":
+        raise HTTPException(status_code=400, detail="Vetëm ofertat në pritje mund të pranohen")
+
+    if product.status != "active":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Ky produkt nuk mund të shitet sepse është në statusin: {product.status}"
+        )
+
+    # Pranimi i ofertës vetëm e rezervon produktin - shitja finalizohet (dhe
+    # Order-i krijohet) pasi blerësi ta paguajë realisht përmes Stripe, te
+    # POST /bids/{bid_id}/checkout-session (shih app/routers/payment.py).
     bid.status = "accepted"
     product.status = "reserved"
 

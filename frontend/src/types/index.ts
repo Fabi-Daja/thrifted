@@ -44,7 +44,7 @@ export interface MessageResponse {
 
 // ---- Products ----
 export type SellingType = "fixed_price" | "offers_only" | "fixed_price_offers"
-export type ProductStatus = "active" | "sold" | "archived"
+export type ProductStatus = "active" | "reserved" | "sold" | "archived"
 
 export interface ProductResponse {
   id: string
@@ -86,6 +86,7 @@ export interface ProductFilters {
   price_max?: number
   q?: string
   sort?: "price_asc" | "price_desc" | "newest"
+  owner_id?: string
 }
 
 // ---- Product Images ----
@@ -127,4 +128,10 @@ export interface OrderResponse {
   final_price: number
   status: "completed"
   created_at: string
+}
+
+// ---- Payments (Stripe) ----
+export interface CheckoutSessionResponse {
+  checkout_url: string
+  session_id: string
 }

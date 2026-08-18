@@ -1,48 +1,52 @@
-import { Link, useNavigate } from "react-router-dom"
-import { LogOut, Plus, Search, User } from "lucide-react"
-import { useState } from "react"
-import { useAuth } from "@/context/AuthContext"
-import { Avatar } from "@/components/user/Avatar"
-import { Button } from "@/components/forms/Button"
+import { Link, useNavigate } from "@tanstack/react-router";
+import { LogOut, Plus, Search, User } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { Avatar } from "@/components/user/Avatar";
+import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 
 export function Navbar() {
-  const { isLoggedIn, user, logout } = useAuth()
-  const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
+  const { isLoggedIn, isLoading, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout()
-    setMenuOpen(false)
-    navigate("/")
-  }
+    logout();
+    setMenuOpen(false);
+    navigate({ to: "/" });
+  };
 
   return (
-    <header className="border-b border-border bg-surface">
+    <header className="sticky top-0 z-30 border-b border-border bg-surface/85 backdrop-blur-md supports-[backdrop-filter]:bg-surface/70">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
-        <Link to="/" className="text-xl font-semibold tracking-tight text-textPrimary">
+        <Link
+          to="/"
+          className="text-xl font-semibold tracking-tight text-textPrimary"
+        >
           Thrifted
         </Link>
 
         <Link
           to="/search"
-          className="ml-auto flex items-center gap-2 rounded px-3 py-2 text-sm text-textSecondary transition-colors hover:text-textPrimary sm:ml-6"
+          className="ml-4 flex items-center gap-2 rounded px-3 py-2 text-sm text-textSecondary transition-colors hover:text-textPrimary sm:ml-6"
         >
-          <Search className="size-4" />
+          <Search className="size-4" aria-hidden="true" />
           <span className="hidden sm:inline">Kërko</span>
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
-          {isLoggedIn ? (
+          {isLoading ? (
+            <div className="flex size-9 items-center justify-center">
+              <LoadingSpinner className="[&_svg]:size-4" />
+            </div>
+          ) : isLoggedIn ? (
             <>
               <Link
                 to="/create-product"
-                className="hidden sm:flex"
-                aria-label="Shto produkt"
+                className="hidden sm:inline-flex items-center justify-center gap-1.5 rounded bg-primary px-3 py-2 text-sm font-medium text-surface transition-colors hover:bg-primary-hover"
               >
-                <Button size="sm" className="gap-1.5">
-                  <Plus className="size-4" />
-                  Shit
-                </Button>
+                <Plus className="size-4" aria-hidden="true" />
+                Shit
               </Link>
 
               <div className="relative">
@@ -91,20 +95,24 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  Hyr
-                </Button>
+              <Link
+                to="/login"
+                className="rounded px-3 py-2 text-sm font-medium text-textPrimary transition-colors hover:bg-background"
+              >
+                Hyr
               </Link>
-              <Link to="/register">
-                <Button size="sm">Regjistrohu</Button>
+              <Link
+                to="/register"
+                className="rounded bg-primary px-3 py-2 text-sm font-medium text-surface transition-colors hover:bg-primary-hover"
+              >
+                Regjistrohu
               </Link>
             </>
           )}
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 function MenuLink({
@@ -113,10 +121,10 @@ function MenuLink({
   children,
   onClick,
 }: {
-  to: string
-  icon: React.ReactNode
-  children: React.ReactNode
-  onClick: () => void
+  to: string;
+  icon: ReactNode;
+  children: ReactNode;
+  onClick: () => void;
 }) {
   return (
     <Link
@@ -127,5 +135,5 @@ function MenuLink({
       {icon}
       {children}
     </Link>
-  )
+  );
 }

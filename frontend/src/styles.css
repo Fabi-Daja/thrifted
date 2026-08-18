@@ -1,0 +1,88 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Thrifted design system — warm minimal, beige/tan palette.
+ * All tokens declared in @theme so Tailwind v4 generates utilities
+ * like bg-primary, text-textPrimary, shadow-card, etc.
+ */
+
+@theme {
+  --color-background: #faf6f0;
+  --color-surface: #fffefb;
+  --color-primary: #b8916a;
+  --color-primary-hover: #9c7850;
+  --color-textPrimary: #2b2420;
+  --color-textSecondary: #8a7b6c;
+  --color-border: #e8e1d8;
+  --color-success: #5b8c5a;
+  --color-danger: #b5533c;
+
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  --radius: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-card:
+    0 1px 3px rgba(43, 36, 32, 0.06), 0 1px 2px rgba(43, 36, 32, 0.04);
+  --shadow-cardHover: 0 8px 24px rgba(43, 36, 32, 0.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-textPrimary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--color-background),
+      0 0 0 4px var(--color-primary);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

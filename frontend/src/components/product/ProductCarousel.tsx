@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ProductImage } from "@/types"
 
@@ -8,10 +8,21 @@ interface ProductCarouselProps {
   title: string
 }
 
+function Placeholder() {
+  return (
+    <div className="flex size-full flex-col items-center justify-center gap-2 text-textSecondary/50">
+      <ImageOff className="size-12" aria-hidden="true" />
+      <span className="text-sm">pa foto</span>
+    </div>
+  )
+}
+
 export function ProductCarousel({ images, title }: ProductCarouselProps) {
   const [active, setActive] = useState(0)
+  const [failed, setFailed] = useState<Set<string>>(new Set())
   const hasImages = images.length > 0
-  const current = hasImages ? images[active].url : "/placeholder.svg?height=600&width=480"
+  const current = hasImages ? images[active].url : undefined
+  const currentFailed = !current || failed.has(current)
 
   const go = (dir: number) => {
     setActive((prev) => (prev + dir + images.length) % images.length)
@@ -20,8 +31,17 @@ export function ProductCarousel({ images, title }: ProductCarouselProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-border bg-background">
-        <img src={current || "/placeholder.svg"} alt={title} className="size-full object-cover" />
-        {images.length > 1 && (
+        {currentFailed ? (
+          <Placeholder />
+        ) : (
+          <img
+            src={current}
+            alt={title}
+            onError={() => setFailed((s) => new Set(s).add(current))}
+            className="size-full object-cover"
+          />
+        )}
+        {images.length > 1 && !currentFailed && (
           <>
             <button
               onClick={() => go(-1)}
@@ -53,7 +73,18 @@ export function ProductCarousel({ images, title }: ProductCarouselProps) {
                 i === active ? "border-primary" : "border-border",
               )}
             >
-              <img src={img.url || "/placeholder.svg"} alt="" className="size-full object-cover" />
+              {failed.has(img.url) ? (
+                <div className="flex size-full items-center justify-center bg-background text-textSecondary/50">
+                  <ImageOff className="size-5" aria-hidden="true" />
+                </div>
+              ) : (
+                <img
+                  src={img.url}
+                  alt=""
+                  onError={() => setFailed((s) => new Set(s).add(img.url))}
+                  className="size-full object-cover"
+                />
+              )}
             </button>
           ))}
         </div>

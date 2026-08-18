@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link } from "@tanstack/react-router";
 
 export function Footer() {
   return (
@@ -11,18 +11,10 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-textSecondary">
-          <Link to="/search" className="transition-colors hover:text-textPrimary">
-            Marketi
-          </Link>
-          <Link to="/create-product" className="transition-colors hover:text-textPrimary">
-            Shit
-          </Link>
-          <a href="#" className="transition-colors hover:text-textPrimary">
-            Rreth nesh
-          </a>
-          <a href="#" className="transition-colors hover:text-textPrimary">
-            Ndihmë
-          </a>
+          <Link to="/search" className="transition-colors hover:text-textPrimary">Marketi</Link>
+          <Link to="/create-product" className="transition-colors hover:text-textPrimary">Shit</Link>
+          <Link to="/about" className="transition-colors hover:text-textPrimary">Rreth nesh</Link>
+          <Link to="/help" className="transition-colors hover:text-textPrimary">Ndihmë</Link>
         </nav>
       </div>
       <div className="border-t border-border py-4">
@@ -31,5 +23,5 @@ export function Footer() {
         </p>
       </div>
     </footer>
-  )
+  );
 }

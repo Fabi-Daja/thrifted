@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom"
-import { MapPin } from "lucide-react"
-import { Avatar } from "./Avatar"
-import { RatingDisplay } from "./RatingDisplay"
-import type { UserResponse } from "@/types"
+import { Link } from "@tanstack/react-router";
+import { MapPin } from "lucide-react";
+import { Avatar } from "./Avatar";
+import { RatingDisplay } from "./RatingDisplay";
+import type { UserResponse } from "@/types";
 
 interface UserBadgeProps {
   user: Pick<
     UserResponse,
     "id" | "username" | "full_name" | "profile_photo_url" | "rating_avg" | "rating_count" | "location"
-  >
-  linkToProfile?: boolean
+  >;
+  linkToProfile?: boolean;
 }
 
 export function UserBadge({ user, linkToProfile = true }: UserBadgeProps) {
@@ -30,16 +30,17 @@ export function UserBadge({ user, linkToProfile = true }: UserBadgeProps) {
         </div>
       </div>
     </div>
-  )
+  );
 
-  if (!linkToProfile) return content
+  if (!linkToProfile) return content;
 
   return (
     <Link
-      to={`/users/${user.id}`}
+      to="/users/$id"
+      params={{ id: user.id }}
       className="block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary/40"
     >
       {content}
     </Link>
-  )
+  );
 }

@@ -5,7 +5,7 @@ import type {
   ProductImage,
   ProductResponse,
   UpdateProductRequest,
-  OrderResponse,
+  CheckoutSessionResponse,
 } from "@/types"
 
 function buildQuery(filters: ProductFilters = {}): string {
@@ -41,9 +41,7 @@ export const productsApi = {
     const form = new FormData()
     files.forEach((file) => form.append("files", file))
     return axiosInstance
-      .post<ProductImage[]>(`/products/${productId}/images`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      .post<ProductImage[]>(`/products/${productId}/images`, form)
       .then((r) => r.data)
   },
 
@@ -52,6 +50,10 @@ export const productsApi = {
       .delete(`/products/${productId}/images`, { data: { image_ids: imageIds } })
       .then((r) => r.data),
 
-  buy: (productId: string) =>
-    axiosInstance.post<OrderResponse>(`/products/${productId}/buy`).then((r) => r.data),
+  // Nis pagesën reale me Stripe (hosted checkout); porosia krijohet vetëm
+  // pasi pagesa konfirmohet nga Stripe, jo këtu.
+  checkout: (productId: string) =>
+    axiosInstance
+      .post<CheckoutSessionResponse>(`/products/${productId}/checkout-session`)
+      .then((r) => r.data),
 }
