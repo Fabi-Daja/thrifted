@@ -110,7 +110,8 @@ def finalize_checkout_session(db: Session, session) -> Order:
     if session.payment_status != "paid":
         raise HTTPException(status_code=400, detail="Pagesa nuk është konfirmuar ende.")
 
-    metadata = session.metadata or {}
+    # StripeObject (SDK v15+) s'ka .get() si dict normal — .to_dict() e kthen në dict të thjeshtë.
+    metadata = session.metadata.to_dict() if session.metadata else {}
     product_id = metadata.get("product_id")
     buyer_id = metadata.get("buyer_id")
     bid_id = metadata.get("bid_id")

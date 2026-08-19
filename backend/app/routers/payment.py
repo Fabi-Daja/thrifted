@@ -51,7 +51,9 @@ def confirm_checkout_session(
     except stripe.error.StripeError:
         raise HTTPException(status_code=404, detail="Sesioni i pagesës s'u gjet.")
 
-    if session.metadata.get("buyer_id") != str(current_user.id):
+    # StripeObject (SDK v15+) s'ka .get() si dict normal — .to_dict() e kthen në dict të thjeshtë.
+    metadata = session.metadata.to_dict() if session.metadata else {}
+    if metadata.get("buyer_id") != str(current_user.id):
         raise HTTPException(status_code=403, detail="Ky sesion pagese s'të përket.")
 
     return payment_service.finalize_checkout_session(db, session)
