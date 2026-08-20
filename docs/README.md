@@ -19,7 +19,7 @@ Ky folder mban dokumentacionin e projektit, të ndarë në dy lloje:
 | [Faza 1](faza/faza-1-backend-db-auth-products.md) | Backend + DB + Auth + Products | 🔲 Nuk ka filluar |
 | [Faza 2](faza/faza-2-frontend-integrimi.md) | Frontend + integrimi me backend | 🔲 Nuk ka filluar |
 | [Faza 3](faza/faza-3-favorites-search-filters.md) | Favorites + Search + Filters | 🔲 Nuk ka filluar |
-| [Faza 4](faza/faza-4-bids-chat.md) | Bids + Chat (chat është v2) | 🔲 Nuk ka filluar |
+| [Faza 4](faza/faza-4-bids-chat.md) | Bids + Chat (chat është v2) | ✅ Kryer — Bids + Buying System + Chat (realtime WebSocket) |
 | [Faza 5](faza/faza-5-ai-features.md) | AI Features (v2) | 🔲 Nuk ka filluar |
 | [Faza 6](faza/faza-6-docker-deploy-cicd.md) | Docker + Deploy + CI/CD | 🔲 Nuk ka filluar |
 

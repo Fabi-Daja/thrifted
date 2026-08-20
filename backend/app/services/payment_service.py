@@ -10,6 +10,7 @@ from app.models.bid import Bid
 from app.models.order import Order
 from app.models.product import Product
 from app.models.user import User
+from app.services import conversation_service, notification_service
 
 
 def _to_stripe_amount(price) -> int:
@@ -150,6 +151,13 @@ def finalize_checkout_session(db: Session, session) -> Order:
         ).all()
         for other_bid in other_bids:
             other_bid.status = "rejected"
+
+        notification_service.notify_order_paid(db, new_order, product)
+
+        conversation = conversation_service.get_or_create_conversation(db, product.id, buyer_id)
+        conversation_service.send_message(
+            db, conversation, product.owner_id, content="🎉 Blerja u finalizua! Kontakto për dërgesën."
+        )
 
         db.commit()
         db.refresh(new_order)

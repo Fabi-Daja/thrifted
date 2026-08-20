@@ -130,6 +130,111 @@ export interface OrderResponse {
   created_at: string
 }
 
+// ---- Notifications ----
+export type NotificationType =
+  | "bid_created"
+  | "bid_accepted"
+  | "bid_rejected"
+  | "order_paid"
+  | "message_received"
+
+export interface NotificationResponse {
+  id: string
+  type: NotificationType
+  message: string
+  product_id: string | null
+  bid_id: string | null
+  actor_id: string | null
+  is_read: boolean
+  created_at: string
+}
+
+export interface UnreadCountResponse {
+  count: number
+}
+
+export interface OrderCounterparty {
+  id: string
+  username: string
+  full_name: string | null
+  profile_photo_url: string | null
+}
+
+export interface OrderDetailResponse {
+  id: string
+  final_price: number
+  status: string
+  created_at: string
+  product: ProductResponse
+  counterparty: OrderCounterparty
+  has_review: boolean
+}
+
+// ---- Reviews ----
+export interface ReviewCreateRequest {
+  rating: number
+  comment?: string
+}
+
+export interface ReviewResponse {
+  id: string
+  order_id: string
+  reviewer_id: string
+  reviewee_id: string
+  rating: number
+  comment: string | null
+  created_at: string
+}
+
+// ---- Conversations / Chat ----
+export interface ChatMessageResponse {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  bid_id: string | null
+  is_read: boolean
+  created_at: string
+  bid: BidResponse | null
+}
+
+export interface ConversationParticipant {
+  id: string
+  username: string
+  full_name: string | null
+  profile_photo_url: string | null
+}
+
+export interface ConversationProduct {
+  id: string
+  title: string
+  price: number
+  status: ProductStatus
+}
+
+export interface ConversationResponse {
+  id: string
+  product: ConversationProduct
+  counterparty: ConversationParticipant
+  last_message: ChatMessageResponse | null
+  unread_count: number
+  is_seller: boolean
+  created_at: string
+}
+
+export interface ConversationCreateRequest {
+  product_id: string
+}
+
+export interface ChatMessageCreateRequest {
+  content: string
+}
+
+// ---- Realtime (WebSocket) ----
+export type RealtimeEvent =
+  | { event: "notification"; notification: NotificationResponse }
+  | { event: "message"; message: ChatMessageResponse }
+
 // ---- Payments (Stripe) ----
 export interface CheckoutSessionResponse {
   checkout_url: string

@@ -13,3 +13,4 @@ dist/
 # General
 .vscode/
 .DS_Store
+frontend/.workspace/

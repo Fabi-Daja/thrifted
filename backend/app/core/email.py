@@ -33,7 +33,9 @@ def send_verification_email(to_email: str, token: str) -> None:
     smtp_pass = os.getenv("MAILTRAP_PASS")
     from_addr = os.getenv("EMAIL_FROM", "no-reply@thrifted.local")
 
-    link = f"http://127.0.0.1:8000/auth/verify-email?token={token}"
+    # Linku duhet të çojë te faqja e frontend-it (jo direkt te backend-i) — ajo faqe
+    # thërret GET /auth/verify-email dhe pastaj tregon UI + ridrejton te /login.
+    link = f"{os.getenv('FRONTEND_URL')}/verify-email?token={token}"
 
     msg = EmailMessage()
     msg["Subject"] = "Verifikoni email-in tuaj - Thrifted"

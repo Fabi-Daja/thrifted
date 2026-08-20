@@ -15,7 +15,12 @@ export const authApi = {
     axiosInstance.post<LoginResponse>("/auth/login", data).then((r) => r.data),
 
   verifyEmail: (token: string) =>
-    axiosInstance.post<MessageResponse>("/auth/verify-email", { token }).then((r) => r.data),
+    axiosInstance
+      .get<MessageResponse>("/auth/verify-email", { params: { token } })
+      .then((r) => r.data),
+
+  resendVerification: (email: string) =>
+    axiosInstance.post<MessageResponse>("/auth/resend-verification", { email }).then((r) => r.data),
 
   forgotPassword: (email: string) =>
     axiosInstance.post<MessageResponse>("/auth/forgot-password", { email }).then((r) => r.data),

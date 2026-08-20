@@ -6,8 +6,10 @@ import { RouteNotFound } from "@/components/layout/RouteNotFound";
 import { UserBadge } from "@/components/user/UserBadge";
 import { UserProfileSkeleton } from "@/components/user/UserProfileSkeleton";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { RatingDisplay } from "@/components/user/RatingDisplay";
 import { usersApi } from "@/api/usersApi";
 import { useProducts } from "@/hooks/useProducts";
+import { useUserReviews } from "@/hooks/useReviews";
 import { formatRelativeDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/users/$id")({
@@ -41,6 +43,7 @@ function UserProfilePage() {
     queryFn: () => usersApi.getById(id),
   });
   const { data: products } = useProducts({ owner_id: id });
+  const { data: reviews } = useUserReviews(id);
 
   if (isLoading) {
     return (
@@ -70,6 +73,27 @@ function UserProfilePage() {
           Produktet e {user.full_name ?? user.username}
         </h2>
         <ProductGrid products={products ?? []} emptyMessage="Ky përdorues s'ka produkte aktive." />
+      </div>
+      <div>
+        <div className="mb-4 flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-textPrimary">Vlerësimet</h2>
+          <RatingDisplay value={user.rating_avg} count={user.rating_count} />
+        </div>
+        {!reviews || reviews.length === 0 ? (
+          <p className="text-sm text-textSecondary">Ky përdorues s'ka marrë ende asnjë vlerësim.</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {reviews.map((r) => (
+              <li key={r.id} className="rounded-lg border border-border bg-surface p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <RatingDisplay value={r.rating} />
+                  <span className="text-xs text-textSecondary">{formatRelativeDate(r.created_at)}</span>
+                </div>
+                {r.comment && <p className="mt-2 text-sm text-textSecondary">{r.comment}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </PageContainer>
   );

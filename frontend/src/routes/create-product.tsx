@@ -203,9 +203,12 @@ function CreateProductPage() {
               ))}
             </div>
           )}
+          {files.length === 0 && (
+            <p className="text-sm text-danger">Shto të paktën 1 foto para se të vazhdosh — produktet pa foto besohen shumë më pak.</p>
+          )}
           <div className="flex justify-between">
             <Button variant="outline" onClick={() => setStep(0)}>Kthehu</Button>
-            <Button onClick={() => setStep(2)}>Vazhdo</Button>
+            <Button onClick={() => setStep(2)} disabled={!canGoNext}>Vazhdo</Button>
           </div>
         </div>
       )}

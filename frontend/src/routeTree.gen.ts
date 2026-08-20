@@ -16,14 +16,17 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
 import { Route as UsersIdRouteImport } from './routes/users.$id'
-import { Route as ProductsIdEditRouteImport } from './routes/products.$id.edit'
+import { Route as ProductsIdEditRouteImport } from './routes/products.$id_.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +63,11 @@ const MeRoute = MeRouteImport.update({
   path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -75,6 +83,11 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
@@ -83,6 +96,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
   id: '/checkout/success',
   path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/messages_/$id',
+  path: '/messages/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIdRoute = ProductsIdRouteImport.update({
@@ -96,9 +114,9 @@ const UsersIdRoute = UsersIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIdEditRoute = ProductsIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => ProductsIdRoute,
+  id: '/products/$id_/edit',
+  path: '/products/$id/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -109,12 +127,15 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/checkout/success': typeof CheckoutSuccessRoute
-  '/products/$id': typeof ProductsIdRouteWithChildren
+  '/messages/$id': typeof MessagesIdRoute
+  '/products/$id': typeof ProductsIdRoute
   '/users/$id': typeof UsersIdRoute
   '/products/$id/edit': typeof ProductsIdEditRoute
 }
@@ -126,12 +147,15 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/checkout/success': typeof CheckoutSuccessRoute
-  '/products/$id': typeof ProductsIdRouteWithChildren
+  '/messages/$id': typeof MessagesIdRoute
+  '/products/$id': typeof ProductsIdRoute
   '/users/$id': typeof UsersIdRoute
   '/products/$id/edit': typeof ProductsIdEditRoute
 }
@@ -144,14 +168,17 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/checkout/success': typeof CheckoutSuccessRoute
-  '/products/$id': typeof ProductsIdRouteWithChildren
+  '/messages_/$id': typeof MessagesIdRoute
+  '/products/$id': typeof ProductsIdRoute
   '/users/$id': typeof UsersIdRoute
-  '/products/$id/edit': typeof ProductsIdEditRoute
+  '/products/$id_/edit': typeof ProductsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,11 +190,14 @@ export interface FileRouteTypes {
     | '/help'
     | '/login'
     | '/me'
+    | '/messages'
     | '/register'
     | '/reset-password'
     | '/search'
+    | '/settings'
     | '/verify-email'
     | '/checkout/success'
+    | '/messages/$id'
     | '/products/$id'
     | '/users/$id'
     | '/products/$id/edit'
@@ -180,11 +210,14 @@ export interface FileRouteTypes {
     | '/help'
     | '/login'
     | '/me'
+    | '/messages'
     | '/register'
     | '/reset-password'
     | '/search'
+    | '/settings'
     | '/verify-email'
     | '/checkout/success'
+    | '/messages/$id'
     | '/products/$id'
     | '/users/$id'
     | '/products/$id/edit'
@@ -197,14 +230,17 @@ export interface FileRouteTypes {
     | '/help'
     | '/login'
     | '/me'
+    | '/messages'
     | '/register'
     | '/reset-password'
     | '/search'
+    | '/settings'
     | '/verify-email'
     | '/checkout/success'
+    | '/messages_/$id'
     | '/products/$id'
     | '/users/$id'
-    | '/products/$id/edit'
+    | '/products/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -215,13 +251,17 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
   MeRoute: typeof MeRoute
+  MessagesRoute: typeof MessagesRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
-  ProductsIdRoute: typeof ProductsIdRouteWithChildren
+  MessagesIdRoute: typeof MessagesIdRoute
+  ProductsIdRoute: typeof ProductsIdRoute
   UsersIdRoute: typeof UsersIdRoute
+  ProductsIdEditRoute: typeof ProductsIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -275,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -296,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verify-email': {
       id: '/verify-email'
       path: '/verify-email'
@@ -308,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout/success'
       fullPath: '/checkout/success'
       preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages_/$id': {
+      id: '/messages_/$id'
+      path: '/messages/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/$id': {
@@ -324,27 +385,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/products/$id/edit': {
-      id: '/products/$id/edit'
-      path: '/edit'
+    '/products/$id_/edit': {
+      id: '/products/$id_/edit'
+      path: '/products/$id/edit'
       fullPath: '/products/$id/edit'
       preLoaderRoute: typeof ProductsIdEditRouteImport
-      parentRoute: typeof ProductsIdRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface ProductsIdRouteChildren {
-  ProductsIdEditRoute: typeof ProductsIdEditRoute
-}
-
-const ProductsIdRouteChildren: ProductsIdRouteChildren = {
-  ProductsIdEditRoute: ProductsIdEditRoute,
-}
-
-const ProductsIdRouteWithChildren = ProductsIdRoute._addFileChildren(
-  ProductsIdRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -354,13 +403,17 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
   MeRoute: MeRoute,
+  MessagesRoute: MessagesRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
-  ProductsIdRoute: ProductsIdRouteWithChildren,
+  MessagesIdRoute: MessagesIdRoute,
+  ProductsIdRoute: ProductsIdRoute,
   UsersIdRoute: UsersIdRoute,
+  ProductsIdEditRoute: ProductsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

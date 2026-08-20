@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Plus, Search, User } from "lucide-react";
+import { LogOut, MessageCircle, Plus, Search, Settings, User } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar } from "@/components/user/Avatar";
 import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
+import { NotificationBell } from "@/components/layout/NotificationBell";
+import { MessagesNavLink } from "@/components/layout/MessagesNavLink";
 
 export function Navbar() {
   const { isLoggedIn, isLoading, user, logout } = useAuth();
@@ -49,6 +51,9 @@ export function Navbar() {
                 Shit
               </Link>
 
+              <MessagesNavLink />
+              <NotificationBell />
+
               <div className="relative">
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
@@ -80,6 +85,20 @@ export function Navbar() {
                         onClick={() => setMenuOpen(false)}
                       >
                         Shit një produkt
+                      </MenuLink>
+                      <MenuLink
+                        to="/messages"
+                        icon={<MessageCircle className="size-4" />}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Mesazhet
+                      </MenuLink>
+                      <MenuLink
+                        to="/settings"
+                        icon={<Settings className="size-4" />}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Konfigurimet
                       </MenuLink>
                       <button
                         onClick={handleLogout}

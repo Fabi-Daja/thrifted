@@ -13,7 +13,7 @@ import { useToast } from "@/context/ToastContext";
 import { extractApiError } from "@/api/axiosInstance";
 import type { SellingType } from "@/types";
 
-export const Route = createFileRoute("/products/$id/edit")({
+export const Route = createFileRoute("/products/$id_/edit")({
   component: () => (
     <ProtectedRoute>
       <EditProductPage />

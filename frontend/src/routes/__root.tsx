@@ -12,9 +12,11 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/context/AuthContext";
+import { RealtimeProvider } from "@/context/RealtimeContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { EmailVerificationBanner } from "@/components/layout/EmailVerificationBanner";
 import { ScrollToTop } from "@/components/navigation/ScrollToTop";
 
 function NotFoundComponent() {
@@ -126,20 +128,23 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
-          <div className="flex min-h-screen flex-col bg-background">
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-surface focus:outline-none"
-            >
-              Kalo te përmbajtja kryesore
-            </a>
-            <Navbar />
-            <main id="main-content" className="flex flex-1 flex-col">
-              <Outlet />
-            </main>
-            <Footer />
-            <ScrollToTop />
-          </div>
+          <RealtimeProvider>
+            <div className="flex min-h-screen flex-col bg-background">
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-surface focus:outline-none"
+              >
+                Kalo te përmbajtja kryesore
+              </a>
+              <Navbar />
+              <EmailVerificationBanner />
+              <main id="main-content" className="flex flex-1 flex-col">
+                <Outlet />
+              </main>
+              <Footer />
+              <ScrollToTop />
+            </div>
+          </RealtimeProvider>
         </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>

@@ -12,10 +12,23 @@ class SellingType(str, Enum):
     fixed_price_offers = "fixed_price_offers"
 
 
+class ProductCategory(str, Enum):
+    """Duhet të përputhet me CATEGORIES te frontend/src/lib/constants.ts —
+    ndryshe filtrimi sipas kategorisë (GET /products?category=...) hesht
+    lë jashtë produkte të kategorizuara gabim (shih docs/faza/faza-2-...)."""
+
+    womens = "womens"
+    mens = "mens"
+    shoes = "shoes"
+    accessories = "accessories"
+    bags = "bags"
+    kids = "kids"
+
+
 class ProductCreate(BaseModel):
     title: str = Field(min_length=3, max_length=100)
     description: Optional[str] = None
-    category: Optional[str] = None
+    category: Optional[ProductCategory] = None
     brand: Optional[str] = None
     size: Optional[str] = None
     color: Optional[str] = None
@@ -27,7 +40,7 @@ class ProductCreate(BaseModel):
 class ProductUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=3, max_length=100)
     description: Optional[str] = None
-    category: Optional[str] = None
+    category: Optional[ProductCategory] = None
     brand: Optional[str] = None
     size: Optional[str] = None
     color: Optional[str] = None

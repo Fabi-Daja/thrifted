@@ -17,6 +17,7 @@ from sqlalchemy import or_
 @router.get("", response_model=list[ProductResponse])
 def get_products(
     db: Session = Depends(get_db),
+    owner_id: uuid.UUID | None = None,
     category: str | None = None,
     brand: str | None = None,
     size: str | None = None,
@@ -29,6 +30,9 @@ def get_products(
     page_size: int = 20,
 ):
     query = db.query(Product).options(selectinload(Product.images)).filter(Product.status == "active")
+
+    if owner_id:
+        query = query.filter(Product.owner_id == owner_id)
 
     if category:
         query = query.filter(Product.category == category)
@@ -98,13 +102,13 @@ def updated_product(product_id:uuid.UUID,data:ProductUpdate,db:Session=Depends(g
     db.refresh(product)
     return product
 
-@router.patch("/{product_id}/archieve",response_model=ProductResponse)
-def archieve_product(product_id:uuid.UUID,db:Session=Depends(get_db),current_user:User=Depends(get_current_user)):
+@router.patch("/{product_id}/archive",response_model=ProductResponse)
+def archive_product(product_id:uuid.UUID,db:Session=Depends(get_db),current_user:User=Depends(get_current_user)):
     product_archived=db.query(Product).filter(Product.id==product_id).first()
     if not product_archived:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Product not found")
     if product_archived.owner_id!=current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not authorized to archieve this product")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not authorized to archive this product")
     product_archived.status="archived"
     db.commit()
     db.refresh(product_archived)    

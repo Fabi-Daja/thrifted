@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI
 from dotenv import load_dotenv
 
@@ -13,10 +15,22 @@ from .routers.product_image import router as product_images_router
 from .routers.review import router as reviews_router, review_public_router
 from .routers.chat import router as chat_router
 from .routers.payment import router as payment_router
+from .routers.notification import router as notification_router
+from .routers.conversation import router as conversation_router
+from .routers.ws import router as ws_router
+from .core.ws_manager import manager as ws_manager
 from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def register_ws_loop() -> None:
+    """I duhet ws_manager-it referenca e event loop-it kryesor që kodi sinkron
+    (routers/services ekzistues) të mund t'i shtyjë event-e WebSocket në mënyrë
+    thread-safe (shih app/core/ws_manager.py)."""
+    ws_manager.set_loop(asyncio.get_running_loop())
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,6 +51,9 @@ app.include_router(reviews_router)
 app.include_router(review_public_router)
 app.include_router(chat_router)
 app.include_router(payment_router)
+app.include_router(notification_router)
+app.include_router(conversation_router)
+app.include_router(ws_router)
 
 @app.get("/")
 def read_root():

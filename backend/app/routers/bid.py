@@ -8,6 +8,7 @@ from app.models.bid import Bid
 from app.models.product import Product
 from app.models.user import User
 from app.schemas.bid import BidCreate, BidResponse
+from app.services import conversation_service, notification_service
 
 router = APIRouter(tags=["Bids"])
 
@@ -38,6 +39,19 @@ def create_bid(
         amount=data.amount,
     )
     db.add(new_bid)
+    db.flush()  # duhet new_bid.id për njoftimin/mesazhin, para se të bëjmë commit
+    notification_service.notify_bid_created(db, new_bid, product, current_user)
+
+    # Oferta shfaqet direkt në bisedën blerës-shitës për këtë produkt.
+    conversation = conversation_service.get_or_create_conversation(db, product_id, current_user.id)
+    conversation_service.send_message(
+        db,
+        conversation,
+        current_user.id,
+        content=f"Ofertë: {new_bid.amount:.2f}€",
+        bid_id=new_bid.id,
+    )
+
     db.commit()
     db.refresh(new_bid)
     return new_bid
@@ -110,6 +124,17 @@ def accept_bid(
     for other_bid in other_bids:
         other_bid.status = "rejected"
 
+    notification_service.notify_bid_accepted(db, bid, product)
+
+    conversation = conversation_service.get_or_create_conversation(db, bid.product_id, bid.bidder_id)
+    conversation_service.send_message(
+        db,
+        conversation,
+        current_user.id,
+        content="✅ Oferta u pranua! Mund të vazhdosh me pagesën.",
+        bid_id=bid.id,
+    )
+
     db.commit()
     db.refresh(bid)
     return bid
@@ -134,6 +159,17 @@ def reject_bid(
         raise HTTPException(status_code=400, detail="Vetëm ofertat në pritje mund të refuzohen")
 
     bid.status = "rejected"
+    notification_service.notify_bid_rejected(db, bid, product)
+
+    conversation = conversation_service.get_or_create_conversation(db, bid.product_id, bid.bidder_id)
+    conversation_service.send_message(
+        db,
+        conversation,
+        current_user.id,
+        content="❌ Oferta u refuzua.",
+        bid_id=bid.id,
+    )
+
     db.commit()
     db.refresh(bid)
     return bid

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronRight, Share2, ArrowRight } from "lucide-react";
+import { ChevronRight, Share2, ArrowRight, MessageCircle } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 import { RouteError } from "@/components/layout/RouteError";
@@ -22,6 +22,7 @@ import {
   useMyBids,
   useBidCheckout,
 } from "@/hooks/useBids";
+import { useStartConversation } from "@/hooks/useConversations";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { formatPrice, formatRelativeDate } from "@/lib/utils";
@@ -29,10 +30,15 @@ import { extractApiError } from "@/api/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import { usersApi } from "@/api/usersApi";
 import { productsApi } from "@/api/productsApi";
+import { CATEGORIES } from "@/lib/constants";
 
 export const Route = createFileRoute("/products/$id")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    checkout: s.checkout === "cancelled" ? ("cancelled" as const) : undefined,
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { checkout?: "cancelled"; offers?: true } => ({
+    ...(s.checkout === "cancelled" ? { checkout: "cancelled" as const } : {}),
+    // Vjen nga linku i njoftimit "dikush bëri ofertë" - hap modalin e ofertave.
+    ...(s.offers === true || s.offers === "true" ? { offers: true as const } : {}),
   }),
   loader: async ({ params, context }) => {
     const product = await context.queryClient.ensureQueryData({
@@ -64,7 +70,7 @@ export const Route = createFileRoute("/products/$id")({
 
 function ProductDetailPage() {
   const { id } = Route.useParams();
-  const { checkout } = Route.useSearch();
+  const { checkout, offers } = Route.useSearch();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuth();
   const { notify } = useToast();
@@ -93,9 +99,18 @@ function ProductDetailPage() {
   const [buying, setBuying] = useState(false);
   const [paying, setPaying] = useState(false);
 
+  useEffect(() => {
+    if (offers && isOwner) {
+      setOffersOpen(true);
+      navigate({ to: "/products/$id", params: { id }, search: {}, replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offers, isOwner]);
+
   const checkoutMutation = useCheckoutProduct();
   const bidCheckoutMutation = useBidCheckout();
   const bidMutation = useCreateBid(id);
+  const startConversation = useStartConversation();
   const { data: bids } = useProductBids(id, isOwner && offersOpen);
   const { accept, reject } = useBidAction(id);
   const { data: myBids } = useMyBids(!isOwner && isLoggedIn);
@@ -137,6 +152,15 @@ function ProductDetailPage() {
         setPaying(false);
       }
     });
+  };
+
+  const handleContactSeller = async () => {
+    try {
+      const conversation = await startConversation.mutateAsync(id);
+      navigate({ to: "/messages/$id", params: { id: conversation.id } });
+    } catch (e) {
+      notify(extractApiError(e), "error");
+    }
   };
 
   if (isLoading) {
@@ -182,7 +206,7 @@ function ProductDetailPage() {
                   search={{ category: product.category }}
                   className="hover:text-textPrimary"
                 >
-                  {product.category}
+                  {CATEGORIES.find((c) => c.value === product.category)?.label ?? product.category}
                 </Link>
               </li>
             </>
@@ -213,7 +237,10 @@ function ProductDetailPage() {
         <div className="grid grid-cols-2 gap-3 rounded-lg border border-border bg-surface p-4 text-sm">
           <InfoRow label="Marka" value={product.brand} />
           <InfoRow label="Masa" value={product.size} />
-          <InfoRow label="Kategoria" value={product.category} />
+          <InfoRow
+            label="Kategoria"
+            value={CATEGORIES.find((c) => c.value === product.category)?.label ?? product.category}
+          />
           <InfoRow label="Ngjyra" value={product.color} />
           <div className="col-span-2">
             <p className="text-xs text-textSecondary">Gjendja</p>
@@ -262,6 +289,15 @@ function ProductDetailPage() {
                 Paguaj {formatPrice(myAcceptedBid!.amount)}
               </Button>
             )}
+            <Button
+              variant="outline"
+              fullWidth
+              loading={startConversation.isPending}
+              onClick={() => requireAuth(handleContactSeller)}
+            >
+              <MessageCircle className="size-4" />
+              Kontakto shitësin
+            </Button>
             {product.status !== "active" && !canPayBid && (
               <p className="text-sm text-textSecondary">Ky produkt nuk është më i disponueshëm.</p>
             )}
@@ -276,7 +312,7 @@ function ProductDetailPage() {
               params={{ id: seller.id }}
               className="group flex items-center justify-between rounded-lg border border-border bg-surface p-3 transition-colors hover:border-primary"
             >
-              <UserBadge user={seller} />
+              <UserBadge user={seller} linkToProfile={false} />
               <ArrowRight
                 className="size-4 text-textSecondary transition-colors group-hover:text-primary"
                 aria-hidden="true"
@@ -292,8 +328,10 @@ function ProductDetailPage() {
         onSubmit={async (amount) => {
           try {
             await bidMutation.mutateAsync(amount);
-            notify("Oferta u dërgua!", "success");
             setBidOpen(false);
+            notify("Oferta u dërgua! Vazhdo bisedën me shitësin.", "success");
+            const conversation = await startConversation.mutateAsync(id);
+            navigate({ to: "/messages/$id", params: { id: conversation.id } });
           } catch (e) {
             notify(extractApiError(e), "error");
           }
