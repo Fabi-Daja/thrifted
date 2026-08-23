@@ -14,6 +14,9 @@ from .routers.order import router as order_router
 from .routers.product_image import router as product_images_router
 from .routers.review import router as reviews_router, review_public_router
 from .routers.chat import router as chat_router
+from .routers.price_estimate import router as price_estimate_router
+from .routers.image_analysis import router as image_analysis_router
+from .routers.image_search import router as image_search_router
 from .routers.payment import router as payment_router
 from .routers.notification import router as notification_router
 from .routers.conversation import router as conversation_router
@@ -50,6 +53,9 @@ app.include_router(product_images_router)
 app.include_router(reviews_router)
 app.include_router(review_public_router)
 app.include_router(chat_router)
+app.include_router(price_estimate_router)
+app.include_router(image_analysis_router)
+app.include_router(image_search_router)
 app.include_router(payment_router)
 app.include_router(notification_router)
 app.include_router(conversation_router)

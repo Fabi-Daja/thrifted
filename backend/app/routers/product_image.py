@@ -1,3 +1,4 @@
+import logging
 import uuid
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
@@ -10,6 +11,9 @@ from app.models.product import Product
 from app.models.product_image import ProductImage
 from app.models.user import User
 from app.schemas.product_image import ProductImageResponse
+from app.services.image_embedding_service import generate_embedding_for_image
+
+logger = logging.getLogger("thrifted.image_embeddings")
 
 router = APIRouter(tags=["Product Images"])
 
@@ -26,7 +30,7 @@ def get_owned_product(product_id: uuid.UUID, current_user: User, db: Session) ->
 
 
 @router.post("/products/{product_id}/images", response_model=list[ProductImageResponse], status_code=status.HTTP_201_CREATED)
-def upload_product_images(
+async def upload_product_images(
     product_id: uuid.UUID,
     files: list[UploadFile] = File(...),
     current_user: User = Depends(get_current_user),
@@ -60,6 +64,21 @@ def upload_product_images(
     db.commit()
     for image in new_images:
         db.refresh(image)
+
+    # §5.3 - gjenero embedding automatikisht per çdo foto te re (visual search).
+    # E QELLIMSHME qe s'e prish upload-in nese dështon (Voyage poshte, kredite
+    # mbaruar, etj.) - foto/produkti mbeten te vlefshme pa u shfaqur ne
+    # kerkimin me ngjashmeri vizuale deri sa embedding-u te rigjenerohet
+    # (backfill script mund ta plotesoje me vone). Commit PER FOTO - nese njera
+    # deshton, s'duhet te terheqe mbrapsht (rollback) embeddings e suksesshme
+    # te fotove te tjera te ketij te njejti upload.
+    for image in new_images:
+        try:
+            await generate_embedding_for_image(db, image)
+            db.commit()
+        except Exception:
+            logger.warning("image_embedding_generation_failed image_id=%s", image.id, exc_info=True)
+            db.rollback()
 
     return new_images
 

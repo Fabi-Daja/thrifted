@@ -1,4 +1,3 @@
-import os
 import json
 import logging
 import math
@@ -11,6 +10,7 @@ import anthropic
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.ai_client import client, MODEL
 from app.models.bid import Bid
 from app.models.favorite import Favorite
 from app.models.notification import Notification
@@ -19,11 +19,8 @@ from app.models.product import Product
 from app.models.user import User
 from app.schemas.chat import ChatMessage
 from app.services import conversation_service, notification_service
+from app.services.price_estimate_service import estimate_price as _estimate_price_service
 from app.services.review_service import get_user_reviews
-
-client = anthropic.AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-MODEL = "claude-haiku-4-5"
 
 # Logger per monitorimin e sulmeve te flaguara (Gap #4, shtresa 7 - defense-in-depth).
 # S'logohet kurre permbajtja e plote e mesazhit (shih Gap #6 per privatesine e
@@ -412,40 +409,13 @@ def get_seller_reviews(db: Session, user_id: str) -> dict:
     }
 
 
-def estimate_price(
-    db: Session, category: str, brand: str | None = None, condition_rating: int | None = None
-) -> dict:
-    """Vleresim 'Faza A' i US-52: bazuar ne shpallje aktive te ngjashme (jo shitje
-    te perfunduara reale - s'ka ende mjaftueshem histori Orders per kete)."""
-    query = db.query(Product).filter(Product.status == "active", Product.category.ilike(f"%{category}%"))
-
-    if brand:
-        query = query.filter(Product.brand.ilike(f"%{brand}%"))
-    if condition_rating is not None:
-        query = query.filter(Product.condition_rating == condition_rating)
-
-    prices = [p.price for p in query.limit(50).all()]
-
-    if len(prices) < 3:
-        return {
-            "confidence": "e ulet",
-            "sample_size": len(prices),
-            "note": (
-                "S'ka mjaftueshem shpallje aktive te ngjashme ne Thrifted per nje vleresim "
-                "te bazuar ne te dhena reale. Jep nje vleresim te pergjithshem bazuar ne "
-                "njohurite e tua te pergjithshme per cmimet e ketij lloji artikulli, dhe "
-                "theksoje qarte qe eshte nje hamendje e pergjithshme, jo e bazuar ne shpallje reale."
-            ),
-        }
-
-    return {
-        "confidence": "e larte" if len(prices) >= 10 else "e mesme",
-        "sample_size": len(prices),
-        "price_min": round(min(prices), 2),
-        "price_max": round(max(prices), 2),
-        "price_avg": round(sum(prices) / len(prices), 2),
-        "note": "Bazuar ne shpallje aktive te ngjashme ne Thrifted, jo ne shitje te perfunduara reale.",
-    }
+def estimate_price(db: Session, category: str, brand: str | None = None, condition_rating: int | None = None) -> dict:
+    """Vleresim 'Faza A' i US-52 - logjika reale (comps-based) jeton tani te
+    app/services/price_estimate_service.py (5.4), e ndarë me kete tool qe s'ka
+    dublikim mes chat-it (5.1) dhe endpoint-it te veçante POST /ai/estimate-price.
+    `for_llm=True` mban sjelljen ekzistuese te chat-it (udhezim shtese per Claude
+    kur s'ka mjaftueshem comps)."""
+    return _estimate_price_service(db, category, brand, condition_rating, for_llm=True)
 
 
 def add_to_favorites(db: Session, user: User, product_id: str) -> dict:
