@@ -10,7 +10,7 @@ from app.models.bid import Bid
 from app.models.order import Order
 from app.models.product import Product
 from app.models.user import User
-from app.services import conversation_service, notification_service
+from app.services import conversation_service, notification_service, recommendation_service
 
 
 def _to_stripe_amount(price) -> int:
@@ -138,6 +138,7 @@ def finalize_checkout_session(db: Session, session) -> Order:
         )
         db.add(new_order)
         product.status = "sold"
+        recommendation_service.log_interaction(db, buyer_id, product.id, "purchase")  # §5.5
 
         if bid_id:
             bid = db.query(Bid).filter(Bid.id == bid_id).first()

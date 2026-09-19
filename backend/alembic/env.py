@@ -23,6 +23,8 @@ from app.models.notification import Notification
 from app.models.conversation import Conversation
 from app.models.message import Message
 from app.models.product_image_embedding import ProductImageEmbedding
+from app.models.user_product_interaction import UserProductInteraction
+from app.models.follow import Follow
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

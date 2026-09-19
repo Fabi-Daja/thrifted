@@ -1,30 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Baby,
-  Footprints,
-  Gem,
-  Heart,
-  Leaf,
-  ShieldCheck,
-  ShoppingBag,
-  Tag,
-  type LucideIcon,
-} from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Leaf, ShieldCheck, Tag } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { SearchBar } from "@/components/navigation/SearchBar";
+import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductRow } from "@/components/product/ProductRow";
-import { CATEGORIES } from "@/lib/constants";
+import { RecommendationsRow } from "@/components/product/RecommendationsRow";
 import { useProducts } from "@/hooks/useProducts";
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  womens: Heart,
-  mens: Tag,
-  shoes: Footprints,
-  accessories: Gem,
-  bags: ShoppingBag,
-  kids: Baby,
-};
+import { useRecommendations } from "@/hooks/useRecommendations";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,54 +20,53 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+// Faqja kryesore - Variant A ("Hero editorial"), sipas Thrifted-dizajni.pptx
+// (slide 7): titull i madh serif + foto sezonale mbajne premtimin e markes,
+// "Shit tani" primar / "Meso si funksionon" sekondar, kater produkte te
+// zgjedhura ("Ne mode") para rrjetit te plote. Zgjedhur mbi Variant B
+// (zbulim nga kategoria) per fazen e lançimit - shih docs/faza/faza-2-*.md.
 function HomePage() {
-  const navigate = useNavigate();
   const { data: newest, isLoading: loadingNewest } = useProducts({ sort: "newest" });
   const { data: deals, isLoading: loadingDeals } = useProducts({ sort: "price_asc" });
+  const { data: recommendations, isLoading: loadingRecommendations } = useRecommendations(12);
 
-  const handleSearch = (q: string) => {
-    navigate({ to: "/search", search: { q } });
-  };
+  const featured = (newest ?? []).slice(0, 4);
+  const rest = (newest ?? []).slice(4, 12);
 
   return (
     <div className="flex flex-col">
       <section className="border-b border-border bg-surface">
-        <PageContainer className="grid items-center gap-8 py-12 md:grid-cols-2 md:py-16">
+        <PageContainer className="grid items-center gap-10 py-14 md:grid-cols-2 md:py-20">
           <div className="flex flex-col gap-6">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-              <Leaf className="size-4" aria-hidden="true" />
-              Modë e qëndrueshme
+            <span className="text-xs font-medium uppercase tracking-[0.14em] text-eyebrow">
+              Marketplace peer-to-peer
             </span>
-            <h1 className="text-balance text-4xl font-bold leading-tight text-textPrimary md:text-5xl">
-              Blej dhe shit rroba të përdorura me stil
+            <h1 className="font-display text-balance text-5xl font-semibold leading-[1.05] text-textPrimary md:text-6xl">
+              Jepi jetë të dytë veshjeve që s'i vesh më
             </h1>
             <p className="max-w-md text-pretty leading-relaxed text-textSecondary">
-              Zbulo copa unike të dorës së dytë, bëj oferta dhe jepi rrobave një jetë të re. Çmime të mira, cilësi e verifikuar.
+              Blej dhe shit rroba, këpucë e aksesorë të përdorura — çdo blerje mbrohet, çdo shitje paguhet.
             </p>
-            <div className="max-w-md">
-              <SearchBar onSearch={handleSearch} placeholder="Kërko marka, kategori, artikuj..." />
-            </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/search"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-surface transition-colors hover:bg-primary-hover"
+                to="/create-product"
+                className="inline-flex items-center gap-2 rounded border border-primary px-6 py-3 font-medium text-primary transition-colors hover:border-primary-hover hover:bg-primary/5 hover:text-primary-hover"
               >
-                Shfleto të gjitha
-                <ArrowRight className="size-4" aria-hidden="true" />
+                Shit tani
               </Link>
               <Link
-                to="/register"
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-6 py-3 font-medium text-textPrimary transition-colors hover:border-primary hover:text-primary"
+                to="/help"
+                className="inline-flex items-center gap-2 rounded border border-border px-6 py-3 font-medium text-textPrimary transition-colors hover:border-textPrimary/40"
               >
-                Fillo të shesësh
+                Mëso si funksionon
               </Link>
             </div>
           </div>
           <div className="relative">
             <img
               src="/images/hero.png"
-              alt="Koleksion i kuruar rrobash të përdorura në sfond bezhë"
-              className="aspect-[4/3] w-full rounded-lg object-cover shadow-card"
+              alt="Koleksion i kuruar rrobash të përdorura, sezoni aktual"
+              className="aspect-[4/3] w-full rounded object-cover"
             />
           </div>
         </PageContainer>
@@ -100,7 +80,7 @@ function HomePage() {
             { icon: Leaf, title: "Miqësore me mjedisin", desc: "Zgjat jetën e çdo cope" },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-center gap-3">
-              <div className="flex size-11 flex-none items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex size-11 flex-none items-center justify-center rounded-full border border-primary/30 text-primary">
                 <Icon className="size-5" aria-hidden="true" />
               </div>
               <div>
@@ -113,36 +93,37 @@ function HomePage() {
       </section>
 
       <section className="bg-background">
-        <PageContainer className="py-10">
-          <h2 className="mb-6 text-2xl font-semibold text-textPrimary">Kategoritë</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-            {CATEGORIES.map((cat) => {
-              const Icon = CATEGORY_ICONS[cat.value];
-              return (
-                <Link
-                  key={cat.value}
-                  to="/search"
-                  search={{ category: cat.value }}
-                  className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 py-6 text-center font-medium text-textPrimary shadow-card transition-colors hover:border-primary hover:text-primary"
-                >
-                  {Icon && <Icon className="size-6 text-primary" aria-hidden="true" />}
-                  {cat.label}
-                </Link>
-              );
-            })}
-          </div>
+        <PageContainer className="py-8">
+          <ProductRow title="Në modë" products={featured} isLoading={loadingNewest} />
         </PageContainer>
       </section>
 
       <section className="bg-background">
         <PageContainer className="py-6">
-          <ProductRow
-            title="Të shtuara së fundmi"
-            products={newest ?? []}
-            isLoading={loadingNewest}
-            viewAllTo="/search"
-            viewAllSearch={{ sort: "newest" }}
+          <RecommendationsRow
+            title="Rekomanduar për ty"
+            products={recommendations ?? []}
+            isLoading={loadingRecommendations}
           />
+        </PageContainer>
+      </section>
+
+      <section className="bg-background">
+        <PageContainer className="py-6">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="font-display text-3xl font-semibold text-textPrimary">
+              Njoftimet e reja
+            </h2>
+            <Link
+              to="/search"
+              search={{ sort: "newest" }}
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary-hover"
+            >
+              Shiko katalogun
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <ProductGrid products={rest} loading={loadingNewest} />
         </PageContainer>
       </section>
 

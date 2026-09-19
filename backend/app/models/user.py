@@ -20,3 +20,14 @@ class User(Base):
     rating_avg = Column(Float, default=0.0)
     rating_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Verifikim numri telefoni (gate para postimit te nje produkti - shih
+    # docs/faza/faza-2-frontend-integrimi.md, deck Thrifted-dizajni.pptx slide 11).
+    # Kodi OTP ruhet i hash-uar (jo i thjeshte), njesoj si password - s'ka
+    # nevoje per tabele te vecante, nje kod aktiv per user mjafton.
+    phone_number = Column(String, nullable=True)
+    is_phone_verified = Column(Boolean, default=False)
+    phone_verification_code_hash = Column(String, nullable=True)
+    phone_verification_expires_at = Column(DateTime(timezone=True), nullable=True)
+    phone_verification_attempts = Column(Integer, default=0)
+    phone_verification_sent_at = Column(DateTime(timezone=True), nullable=True)

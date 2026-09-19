@@ -748,7 +748,14 @@ async def get_chat_response(
         except anthropic.RateLimitError:
             raise HTTPException(status_code=429, detail="Jam pak i zene, provo perseri per pak sekonda")
         except anthropic.APIStatusError as e:
-            raise HTTPException(status_code=502, detail=f"Gabim gjate komunikimit me Claude: {e.message}")
+            # Mesazhi i papërpunuar i Anthropic-ut (e.message) përmban detaje
+            # interne (emrin e provider-it, JSON të papërpunuar, ndonjëherë
+            # gjendjen e faturimit) - loget server-side per debug, por PA i
+            # kaluar userit fundor (gjetur duke testuar live me nje llogari
+            # pa kredite: useri shihte tekstualisht "Your credit balance is
+            # too low..." brenda vetë chat-it, 2026-09-06).
+            logger.error("chat_upstream_error status=%s detail=%s", e.status_code, e.message)
+            raise HTTPException(status_code=502, detail="Thrifty s'po përgjigjet dot tani. Provo përsëri pak më vonë.")
         except anthropic.APIConnectionError:
             raise HTTPException(status_code=502, detail="S'u arrit lidhja me Claude")
 

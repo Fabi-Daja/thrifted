@@ -31,7 +31,10 @@ class UserLogin(BaseModel):
     password: str
 
 
-# Çfarë kthen API si përgjigje (kurrë s'kthejmë password_hash!)
+# Çfarë kthen API si përgjigje (kurrë s'kthejmë password_hash!). Përdoret te
+# profili PUBLIK (GET /users/{id}) - prandaj vetëm `is_phone_verified` (badge
+# besueshmërie, njësoj si "Shitës i verifikuar" te UI) është këtu, jo vetë
+# numri (privat - shih UserPrivateResponse më poshtë).
 class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
@@ -43,10 +46,25 @@ class UserResponse(BaseModel):
     location: Optional[str] = None
     rating_avg: float
     rating_count: int
+    is_phone_verified: bool = False
     created_at: datetime
+    # Jo kolona te modelit User - bashkangjiten si atribute jo-persistente nga
+    # routers/users.py::_attach_follow_stats() para kthimit te çdo endpoint,
+    # sepse kerkojne COUNT(*) mbi tabelen `follows`. `is_following` mbetet
+    # None per guest (s'ka viewer) dhe kur useri shikon profilin e vet.
+    followers_count: int = 0
+    following_count: int = 0
+    is_following: Optional[bool] = None
 
     class Config:
         from_attributes = True  # lejon konvertimin direkt nga modeli SQLAlchemy
+
+
+# Çfarë kthen API për VETË userin e loguar (GET/PATCH /users/me) - shton
+# numrin e telefonit, që s'duhet kurrë të dalë te profili publik i dikujt
+# tjetër.
+class UserPrivateResponse(UserResponse):
+    phone_number: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

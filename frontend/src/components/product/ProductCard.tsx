@@ -22,7 +22,7 @@ export function ProductCard({
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-card transition-shadow hover:shadow-cardHover">
+    <div className="group relative flex flex-col overflow-hidden rounded border border-border bg-surface transition-colors hover:border-primary/50">
       <Link to="/products/$id" params={{ id: product.id }} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-background">
           {cover && !imageError ? (
@@ -47,7 +47,7 @@ export function ProductCard({
           onClick={() => onToggleFavorite(product)}
           aria-label={isFavorite ? "Hiq nga favoritet" : "Shto te favoritet"}
           aria-pressed={isFavorite}
-          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-surface/90 text-textSecondary shadow-card backdrop-blur transition-colors hover:text-primary"
+          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full border border-border bg-surface/90 text-textSecondary backdrop-blur transition-colors hover:text-primary"
         >
           <Heart className={cn("size-4", isFavorite && "fill-danger text-danger")} />
         </button>
@@ -61,7 +61,9 @@ export function ProductCard({
           {[product.brand, product.size].filter(Boolean).join(" · ") || "—"}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <span className="font-semibold text-textPrimary">{formatPrice(product.price)}</span>
+          <span className="font-display text-lg font-semibold text-textPrimary">
+            {formatPrice(product.price)}
+          </span>
           <SellingTypeBadge type={product.selling_type} />
         </div>
       </div>

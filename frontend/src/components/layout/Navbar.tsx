@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, MessageCircle, Plus, Search, Settings, User } from "lucide-react";
+import { HelpCircle, LogOut, MessageCircle, Plus, Settings, User } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar } from "@/components/user/Avatar";
 import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { MessagesNavLink } from "@/components/layout/MessagesNavLink";
+import { SearchBar } from "@/components/navigation/SearchBar";
 
 export function Navbar() {
   const { isLoggedIn, isLoading, user, logout } = useAuth();
@@ -19,40 +20,51 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-surface/85 backdrop-blur-md supports-[backdrop-filter]:bg-surface/70">
+    <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
         <Link
           to="/"
-          className="text-xl font-semibold tracking-tight text-textPrimary"
+          className="font-display text-2xl font-semibold tracking-tight text-textPrimary"
         >
           Thrifted
         </Link>
 
         <Link
           to="/search"
-          className="ml-4 flex items-center gap-2 rounded px-3 py-2 text-sm text-textSecondary transition-colors hover:text-textPrimary sm:ml-6"
+          className="hidden shrink-0 text-sm text-textSecondary transition-colors hover:text-textPrimary sm:inline-block"
         >
-          <Search className="size-4" aria-hidden="true" />
-          <span className="hidden sm:inline">Kërko</span>
+          Katalogu
         </Link>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-2 hidden max-w-sm flex-1 md:block">
+          <SearchBar onSearch={(q) => navigate({ to: "/search", search: { q: q || undefined } })} />
+        </div>
+
+        <div className="ml-auto flex items-center gap-1">
+          <Link
+            to="/help"
+            aria-label="Ndihmë"
+            className="hidden size-9 items-center justify-center rounded-full text-textSecondary transition-colors hover:bg-background hover:text-textPrimary sm:flex"
+          >
+            <HelpCircle className="size-5" aria-hidden="true" />
+          </Link>
+
           {isLoading ? (
             <div className="flex size-9 items-center justify-center">
               <LoadingSpinner className="[&_svg]:size-4" />
             </div>
           ) : isLoggedIn ? (
             <>
-              <Link
-                to="/create-product"
-                className="hidden sm:inline-flex items-center justify-center gap-1.5 rounded bg-primary px-3 py-2 text-sm font-medium text-surface transition-colors hover:bg-primary-hover"
-              >
-                <Plus className="size-4" aria-hidden="true" />
-                Shit
-              </Link>
-
               <MessagesNavLink />
               <NotificationBell />
+
+              <Link
+                to="/create-product"
+                className="ml-1 hidden items-center justify-center gap-1.5 rounded border border-primary px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary-hover hover:bg-primary/5 hover:text-primary-hover sm:inline-flex"
+              >
+                <Plus className="size-4" aria-hidden="true" />
+                Shit tani
+              </Link>
 
               <div className="relative">
                 <button
@@ -122,7 +134,7 @@ export function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="rounded bg-primary px-3 py-2 text-sm font-medium text-surface transition-colors hover:bg-primary-hover"
+                className="rounded border border-primary px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary-hover hover:bg-primary/5 hover:text-primary-hover"
               >
                 Regjistrohu
               </Link>

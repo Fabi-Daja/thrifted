@@ -18,7 +18,7 @@ class ProductImageEmbedding(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     product_id = Column(UUID(as_uuid=True), ForeignKey("products.id"), nullable=False, index=True)
-    image_id = Column(UUID(as_uuid=True), ForeignKey("product_images.id"), nullable=False, unique=True)
+    image_id = Column(UUID(as_uuid=True), ForeignKey("product_images.id", ondelete="CASCADE"), nullable=False, unique=True)
 
     embedding = Column(Vector(EMBEDDING_DIMENSION), nullable=False)
 

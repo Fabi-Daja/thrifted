@@ -1,10 +1,10 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SearchBar } from "@/components/navigation/SearchBar";
-import { FilterDropdown } from "@/components/navigation/FilterDropdown";
 import { SelectDropdown } from "@/components/forms/SelectDropdown";
+import { TextInput } from "@/components/forms/TextInput";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { Pagination } from "@/components/navigation/Pagination";
 import { SORT_OPTIONS, PAGE_SIZE, CATEGORIES, SIZES, CONDITION_OPTIONS } from "@/lib/constants";
@@ -95,29 +95,110 @@ function SearchPage() {
     toggleFavorite.mutate({ productId: product.id, isFavorite: favoriteIds.has(product.id) });
   };
 
+  const categoryLabel = CATEGORIES.find((c) => c.value === search.category)?.label;
+  const heading = categoryLabel ?? (search.q ? `Rezultatet për: "${search.q}"` : "Katalogu");
+
   return (
     <PageContainer className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <h1 className="text-2xl font-semibold text-textPrimary">Marketi</h1>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <SearchBar
-            defaultValue={search.q ?? ""}
-            onSearch={(q) => updateSearch({ q: q || undefined })}
+      <div className="flex flex-col gap-4">
+        <nav aria-label="Breadcrumb" className="text-sm text-textSecondary">
+          <Link to="/" className="hover:text-textPrimary">
+            Kryesore
+          </Link>
+          <span className="mx-1.5">/</span>
+          <span className="text-textPrimary">{categoryLabel ?? "Katalogu"}</span>
+        </nav>
+
+        <h1 className="font-display text-4xl font-semibold text-textPrimary">{heading}</h1>
+
+        <SearchBar
+          defaultValue={search.q ?? ""}
+          onSearch={(q) => updateSearch({ q: q || undefined })}
+          className="max-w-md"
+        />
+
+        <div className="flex flex-wrap items-center gap-2 border-y border-border py-3">
+          <SelectDropdown
+            options={SIZES}
+            placeholder="Madhësia"
+            value={search.size ?? ""}
+            onChange={(e) => updateSearch({ size: e.target.value || undefined })}
+            className="w-auto min-w-0"
+            aria-label="Madhësia"
           />
-          <div className="flex gap-2">
-            <FilterDropdown filters={filters} onApply={(f) => updateSearch(f)} />
-            <SelectDropdown
-              options={SORT_OPTIONS}
-              value={search.sort ?? "newest"}
-              onChange={(e) => updateSearch({ sort: e.target.value as ProductFilters["sort"] })}
-              className="min-w-40"
-              aria-label="Rendit sipas"
+          <TextInput
+            placeholder="Marka"
+            value={search.brand ?? ""}
+            onChange={(e) => updateSearch({ brand: e.target.value || undefined })}
+            className="w-32"
+            aria-label="Marka"
+          />
+          <SelectDropdown
+            options={CONDITION_OPTIONS.filter((o) => o.value !== "")}
+            placeholder="Gjendja"
+            value={search.condition_rating ? String(search.condition_rating) : ""}
+            onChange={(e) =>
+              updateSearch({ condition_rating: e.target.value ? Number(e.target.value) : undefined })
+            }
+            className="w-auto min-w-0"
+            aria-label="Gjendja"
+          />
+          <div className="flex items-center gap-1.5">
+            <TextInput
+              type="number"
+              min={0}
+              placeholder="Çmimi min"
+              value={search.price_min ?? ""}
+              onChange={(e) =>
+                updateSearch({ price_min: e.target.value ? Number(e.target.value) : undefined })
+              }
+              className="w-28"
+              aria-label="Çmimi minimal"
+            />
+            <span className="text-textSecondary">–</span>
+            <TextInput
+              type="number"
+              min={0}
+              placeholder="Çmimi max"
+              value={search.price_max ?? ""}
+              onChange={(e) =>
+                updateSearch({ price_max: e.target.value ? Number(e.target.value) : undefined })
+              }
+              className="w-28"
+              aria-label="Çmimi maksimal"
             />
           </div>
+
+          {hasActiveFilters && (
+            <button
+              onClick={() =>
+                updateSearch({
+                  category: undefined,
+                  brand: undefined,
+                  size: undefined,
+                  condition_rating: undefined,
+                  price_min: undefined,
+                  price_max: undefined,
+                })
+              }
+              className="text-sm text-primary hover:text-primary-hover"
+            >
+              Pastro filtrat
+            </button>
+          )}
+
+          <SelectDropdown
+            options={SORT_OPTIONS}
+            value={search.sort ?? "newest"}
+            onChange={(e) => updateSearch({ sort: e.target.value as ProductFilters["sort"] })}
+            className="ml-auto w-auto min-w-0"
+            aria-label="Rreshto sipas"
+          />
         </div>
+
         <ActiveFilters search={search} onChange={updateSearch} />
         <p className="text-sm text-textSecondary">
-          {isLoading ? "Duke kërkuar…" : total === 1 ? "1 rezultat" : `${total} rezultate`}
+          {isLoading ? "Duke kërkuar…" : total === 1 ? "1 produkt" : `${total} produkte`}
         </p>
       </div>
 

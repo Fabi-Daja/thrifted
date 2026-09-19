@@ -229,12 +229,12 @@ function ProductDetailPage() {
         </div>
 
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-3xl font-semibold text-textPrimary">{product.title}</h1>
+          <h1 className="font-display text-4xl font-semibold text-textPrimary">{product.title}</h1>
           <ShareButton title={product.title} />
         </div>
-        <p className="text-3xl font-bold text-primary">{formatPrice(product.price)}</p>
+        <p className="font-display text-3xl font-semibold text-primary">{formatPrice(product.price)}</p>
 
-        <div className="grid grid-cols-2 gap-3 rounded-lg border border-border bg-surface p-4 text-sm">
+        <div className="grid grid-cols-2 gap-3 rounded border border-border bg-surface p-4 text-sm">
           <InfoRow label="Marka" value={product.brand} />
           <InfoRow label="Masa" value={product.size} />
           <InfoRow

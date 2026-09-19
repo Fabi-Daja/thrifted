@@ -13,3 +13,15 @@ export function useUploadAvatar() {
     mutationFn: (file: File) => usersApi.uploadAvatar(file),
   })
 }
+
+export function useSendPhoneCode() {
+  return useMutation({
+    mutationFn: (phoneNumber: string) => usersApi.sendPhoneCode(phoneNumber),
+  })
+}
+
+export function useVerifyPhoneCode() {
+  return useMutation({
+    mutationFn: (code: string) => usersApi.verifyPhoneCode(code),
+  })
+}

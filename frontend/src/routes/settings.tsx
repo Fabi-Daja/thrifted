@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Camera } from "lucide-react";
+import { Camera, CheckCircle2, Phone } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { Avatar } from "@/components/user/Avatar";
+import { PhoneVerificationModal } from "@/components/user/PhoneVerificationModal";
 import { TextInput, TextArea } from "@/components/forms/TextInput";
 import { Button } from "@/components/forms/Button";
 import { useAuth } from "@/context/AuthContext";
@@ -32,6 +33,7 @@ function SettingsPage() {
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [phoneModalOpen, setPhoneModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -127,6 +129,33 @@ function SettingsPage() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between gap-3 rounded border border-border bg-surface p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-textSecondary">
+            <Phone className="size-4" aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-textPrimary">Numri i telefonit</p>
+            {user.is_phone_verified && user.phone_number ? (
+              <p className="flex items-center gap-1 text-sm text-textSecondary">
+                {user.phone_number}
+                <span className="flex items-center gap-1 text-success">
+                  <CheckCircle2 className="size-3.5" aria-hidden="true" />
+                  Verifikuar
+                </span>
+              </p>
+            ) : (
+              <p className="text-sm text-textSecondary">
+                Nevojitet për të postuar një produkt
+              </p>
+            )}
+          </div>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={() => setPhoneModalOpen(true)}>
+          {user.is_phone_verified ? "Ndrysho" : "Shto numrin"}
+        </Button>
+      </div>
+
       <form onSubmit={submit} className="flex flex-col gap-4">
         <TextInput
           label="Emri i plotë"
@@ -162,6 +191,13 @@ function SettingsPage() {
           </Button>
         </div>
       </form>
+
+      <PhoneVerificationModal
+        open={phoneModalOpen}
+        onClose={() => setPhoneModalOpen(false)}
+        onVerified={() => setPhoneModalOpen(false)}
+        description="Numri i telefonit shfaqet vetëm te ti - s'del kurrë publikisht te profili."
+      />
     </PageContainer>
   );
 }

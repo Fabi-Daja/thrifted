@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List
 
 class ChatMessage(BaseModel):
-    role: str        # "user" ose "model"
+    role: str        # "user" ose "assistant" - kalohet direkt te Anthropic Messages API
     content: str
 
 

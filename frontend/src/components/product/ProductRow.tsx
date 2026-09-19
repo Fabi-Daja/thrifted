@@ -22,7 +22,7 @@ export function ProductRow({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-sans text-2xl font-semibold text-textPrimary">{title}</h2>
+        <h2 className="font-display text-3xl font-semibold text-textPrimary">{title}</h2>
         {viewAllTo && (
           <Link
             to={viewAllTo}

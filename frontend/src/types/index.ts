@@ -1,4 +1,9 @@
 // ---- Users ----
+// Forma publike (GET /users/{id}) - `is_phone_verified` eshte badge
+// besueshmerie i sigurt per t'u shfaqur publikisht, POR VETE numri
+// (`phone_number`) mbetet privat - eshte i pranishem vetem kur backend-i e
+// kthen si UserPrivateResponse (GET/PATCH /users/me). Mos e shfaq
+// `phone_number` supozuar te nje profil publik.
 export interface UserResponse {
   id: string
   email: string
@@ -10,7 +15,15 @@ export interface UserResponse {
   location: string | null
   rating_avg: number
   rating_count: number
+  is_phone_verified: boolean
   created_at: string
+  phone_number?: string | null
+  // Jo fusha te ruajtura direkt - backend-i i llogarit ne çast (COUNT mbi
+  // tabelen `follows`). `is_following` eshte null per guest ose kur je duke
+  // shikuar profilin tend.
+  followers_count: number
+  following_count: number
+  is_following: boolean | null
 }
 
 export interface UpdateUserRequest {
@@ -239,4 +252,47 @@ export type RealtimeEvent =
 export interface CheckoutSessionResponse {
   checkout_url: string
   session_id: string
+}
+
+// ---- AI Chat Assistant (Faza 5.1, POST /chat) ----
+// Emërtuar me parashtesën "AiChat" për t'u dalluar nga ChatMessage* (biseda
+// blerës-shitës, §Conversations) - janë dy sisteme krejt të ndryshme.
+export interface AiChatMessage {
+  role: "user" | "assistant"
+  content: string
+}
+
+export interface AiChatRequest {
+  messages: AiChatMessage[]
+}
+
+export interface AiChatProductCard {
+  id: string
+  title: string | null
+  price: number | null
+  category: string | null
+  brand: string | null
+  condition_rating: number | null
+  image_url: string | null
+}
+
+export interface AiChatResponse {
+  reply: string
+  products: AiChatProductCard[]
+}
+
+// ---- Rekomandime të Personalizuara (Faza 5.5, GET /users/me/recommendations) ----
+// Nënbashkësi fushash produkti, njësoj në formë me AiChatProductCard (5.1) dhe
+// ImageSearchResult (5.3, backend-only ende) - i njëjti model minimal që backend-i
+// e ripërdor për "karta produkti të lehta", jo ProductResponse i plotë. Tip i
+// veçantë (jo ripërdorim i AiChatProductCard) për të mos përzier konceptualisht
+// dy sisteme të ndryshme, njësoj si te backend (app/schemas/recommendation.py).
+export interface RecommendationResult {
+  id: string
+  title: string | null
+  price: number | null
+  category: string | null
+  brand: string | null
+  condition_rating: number | null
+  image_url: string | null
 }

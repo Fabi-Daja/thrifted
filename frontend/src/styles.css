@@ -5,35 +5,43 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Thrifted design system — warm minimal, beige/tan palette.
- * All tokens declared in @theme so Tailwind v4 generates utilities
- * like bg-primary, text-textPrimary, shadow-card, etc.
+ * Thrifted design system v2 — "Sistemi Classical" (gusht 2026), rrjedh nga
+ * Thrifted-dizajni.pptx (slide 4, "Sistemi vizual"). Nje aksent i vetem
+ * (amber) mbi nje baze te ngrohte neutrale, pa gradiente, pa emoji, pa hije
+ * te theksuara - dy fonte serif (jo sans), radius i vogel, karta pa hije te
+ * rende (ndarje me border, jo me shadow).
+ * Te gjitha tokenat jane te deklaruara ne @theme qe Tailwind v4 te gjeneroje
+ * utilities si bg-primary, text-textPrimary, shadow-card, font-display, etj.
  */
 
 @theme {
-  --color-background: #faf6f0;
-  --color-surface: #fffefb;
-  --color-primary: #b8916a;
-  --color-primary-hover: #9c7850;
-  --color-textPrimary: #2b2420;
-  --color-textSecondary: #8a7b6c;
-  --color-border: #e8e1d8;
-  --color-success: #5b8c5a;
-  --color-danger: #b5533c;
+  --color-background: #f3f2f2;
+  --color-surface: #ffffff;
+  --color-primary: #b68235;
+  --color-primary-hover: #96691f;
+  --color-eyebrow: #7d5411;
+  --color-textPrimary: #201f1d;
+  --color-textSecondary: #605d5d;
+  --color-border: #e2e0dd;
+  --color-success: #5b7a52;
+  --color-danger: #a6402e;
 
+  /* Cormorant Garamond - tituj dhe cmime (300/400/600). */
+  --font-display:
+    "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  /* Lora - teksti i nderfaqes: perzgjedhje, etiketa, formulare (400/500/600). */
   --font-sans:
-    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    "Lora", Georgia, "Times New Roman", serif;
 
-  --radius: 0.5rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  --radius: 0.375rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
 
-  --shadow-card:
-    0 1px 3px rgba(43, 36, 32, 0.06), 0 1px 2px rgba(43, 36, 32, 0.04);
-  --shadow-cardHover: 0 8px 24px rgba(43, 36, 32, 0.1);
+  /* Hije shume te lehta - ndarja vjen kryesisht nga border, jo nga shadow. */
+  --shadow-card: 0 1px 2px rgba(32, 31, 29, 0.05);
+  --shadow-cardHover: 0 4px 16px rgba(32, 31, 29, 0.08);
 }
 
 @layer base {
@@ -74,6 +82,35 @@
 
 .animate-fade-in {
   animation: fade-in 0.35s ease-out both;
+}
+
+@keyframes chat-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-chat-pop {
+  animation: chat-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Nje ftese e vetme, e qete, kur widget-i montohet - jo pulsim i pafundem. */
+@keyframes chat-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(182, 130, 53, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(182, 130, 53, 0);
+  }
+}
+
+.animate-chat-pulse {
+  animation: chat-pulse-ring 1.6s ease-out 2;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -15,9 +15,11 @@ import { AuthProvider } from "@/context/AuthContext";
 import { RealtimeProvider } from "@/context/RealtimeContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { Navbar } from "@/components/layout/Navbar";
+import { CategoryNav } from "@/components/layout/CategoryNav";
 import { Footer } from "@/components/layout/Footer";
 import { EmailVerificationBanner } from "@/components/layout/EmailVerificationBanner";
 import { ScrollToTop } from "@/components/navigation/ScrollToTop";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 function NotFoundComponent() {
   return (
@@ -27,7 +29,9 @@ function NotFoundComponent() {
       </div>
       <div>
         <h1 className="text-xl font-semibold text-textPrimary">Faqja nuk u gjet</h1>
-        <p className="mt-1 text-textSecondary">Faqja që kërkove nuk ekziston ose është zhvendosur.</p>
+        <p className="mt-1 text-textSecondary">
+          Faqja që kërkove nuk ekziston ose është zhvendosur.
+        </p>
       </div>
       <Link
         to="/"
@@ -97,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lora:wght@400;500;600&display=swap",
       },
     ],
   }),
@@ -137,12 +141,14 @@ function RootComponent() {
                 Kalo te përmbajtja kryesore
               </a>
               <Navbar />
+              <CategoryNav />
               <EmailVerificationBanner />
               <main id="main-content" className="flex flex-1 flex-col">
                 <Outlet />
               </main>
               <Footer />
               <ScrollToTop />
+              <ChatWidget />
             </div>
           </RealtimeProvider>
         </AuthProvider>

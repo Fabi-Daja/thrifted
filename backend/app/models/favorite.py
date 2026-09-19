@@ -18,3 +18,12 @@ class Favorite(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "product_id", name="unique_user_product_favorite"),
     )
+
+    @property
+    def added_at(self):
+        """Alias per `created_at` - schemas/favorite.py::FavoriteResponse pret
+        `added_at` (kesisoj e njeh frontend-i, shih types/index.ts::FavoriteItem),
+        por kolona reale ne DB eshte `created_at`. Pa kete alias, GET /favorites
+        deshtonte gjithmone me ResponseValidationError (500) - bug i pazbuluar
+        me pare, gjetur duke testuar live flow-in e favoriteve 2026-09-06."""
+        return self.created_at

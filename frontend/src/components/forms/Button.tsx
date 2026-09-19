@@ -12,12 +12,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean
 }
 
+// Sistemi Classical: aksenti perdoret si vije + tekst, jo si mbushje e
+// plote - asnje buton ne dizajn (Thrifted-dizajni.pptx) s'ka sfond te
+// mbushur me ngjyre. "secondary" mbetet i vetmi variant i mbushur, per
+// raste te rralla kur duhet peshe maksimale vizuale.
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-surface hover:bg-primary-hover",
+  primary:
+    "border border-primary text-primary bg-transparent hover:border-primary-hover hover:text-primary-hover hover:bg-primary/5",
   secondary: "bg-textPrimary text-surface hover:bg-textPrimary/90",
-  outline: "border border-border bg-surface text-textPrimary hover:bg-background",
+  outline: "border border-border bg-surface text-textPrimary hover:border-primary hover:text-primary",
   ghost: "text-textPrimary hover:bg-background",
-  danger: "bg-danger text-surface hover:bg-danger/90",
+  danger: "border border-danger text-danger bg-transparent hover:bg-danger/5",
 }
 
 const sizes: Record<Size, string> = {

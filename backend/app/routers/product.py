@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session, selectinload
 import uuid
 
 from app.core.database import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_user_optional
 from app.models.product import Product
 from app.models.user import User
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
+from app.services import recommendation_service
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -83,10 +84,19 @@ def create_product(data:ProductCreate,db:Session=Depends(get_db),current_user:Us
     return new_product
 
 @router.get("/{product_id}",response_model=ProductResponse)
-def get_product(product_id:uuid.UUID,db:Session=Depends(get_db)):
+def get_product(
+    product_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional),
+):
     product=db.query(Product).options(selectinload(Product.images)).filter(Product.id==product_id).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Product not found")
+    if current_user:
+        # §5.5 - loget "view" vetem per userat e loguar (jo guest - s'ka
+        # user_id per te cilin te ndertohet historia e rekomandimeve).
+        recommendation_service.log_interaction(db, current_user.id, product_id, "view")
+        db.commit()
     return product
 
 @router.patch("/{product_id}",response_model=ProductResponse)

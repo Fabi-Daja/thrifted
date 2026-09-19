@@ -20,7 +20,9 @@ export function ScrollToTop() {
       onClick={scroll}
       aria-label="Kthehu në fillim"
       className={cn(
-        "fixed bottom-6 right-6 z-40 flex size-11 items-center justify-center rounded-full bg-primary text-surface shadow-cardHover transition-all duration-300 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30",
+        // bottom-24 (jo bottom-6) qe te mos mbivendoset me butonin e ChatWidget
+        // (components/chat/ChatWidget.tsx), qe zen te njejtin cep bottom-right.
+        "fixed bottom-24 right-6 z-40 flex size-11 items-center justify-center rounded-full bg-primary text-surface shadow-cardHover transition-all duration-300 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30",
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none",
       )}
     >

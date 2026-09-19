@@ -44,12 +44,12 @@ function CheckoutSuccessPage() {
 
   return (
     <PageContainer narrow className="max-w-md">
-      <div className="rounded-lg border border-border bg-surface p-6 text-center shadow-card">
+      <div className="rounded border border-border bg-surface p-6 text-center">
         {state === "loading" && <LoadingSpinner label="Duke konfirmuar pagesën…" />}
         {state === "success" && (
           <>
             <CheckCircle2 className="mx-auto mb-3 size-10 text-success" />
-            <h1 className="mb-2 text-xl font-semibold text-textPrimary">
+            <h1 className="mb-2 font-display text-2xl font-semibold text-textPrimary">
               Pagesa u krye me sukses!
             </h1>
             {order && (
@@ -60,7 +60,7 @@ function CheckoutSuccessPage() {
             )}
             <Link
               to="/me"
-              className="mt-6 inline-block rounded bg-primary px-5 py-2.5 text-sm font-medium text-surface hover:bg-primary-hover"
+              className="mt-6 inline-block rounded border border-primary px-5 py-2.5 text-sm font-medium text-primary hover:border-primary-hover hover:bg-primary/5 hover:text-primary-hover"
             >
               Shiko profilin tim
             </Link>
@@ -69,7 +69,7 @@ function CheckoutSuccessPage() {
         {state === "error" && (
           <>
             <XCircle className="mx-auto mb-3 size-10 text-danger" />
-            <h1 className="mb-2 text-xl font-semibold text-textPrimary">Diçka shkoi keq</h1>
+            <h1 className="mb-2 font-display text-2xl font-semibold text-textPrimary">Diçka shkoi keq</h1>
             <p className="text-sm text-textSecondary">{message}</p>
             <Link
               to="/"
