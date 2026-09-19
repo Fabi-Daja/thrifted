@@ -14,3 +14,7 @@ dist/
 .vscode/
 .DS_Store
 frontend/.workspace/
+
+# Dokumente personale/akademike - jo pjese e kodit
+docs/punim-diplome/
+Claude outputs/

@@ -43,23 +43,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
-app.include_router(users_router)
-app.include_router(products_router)
-app.include_router(favorites_router)
-app.include_router(bid_router)
-app.include_router(order_router)
-app.include_router(product_images_router)
-app.include_router(reviews_router)
-app.include_router(review_public_router)
-app.include_router(chat_router)
-app.include_router(price_estimate_router)
-app.include_router(image_analysis_router)
-app.include_router(image_search_router)
-app.include_router(payment_router)
-app.include_router(notification_router)
-app.include_router(conversation_router)
-app.include_router(ws_router)
+# Prefiks /api per te gjitha rruget e backend-it (faza-6): Nginx e perdor
+# per te dalluar kerkesat per backend nga faqet SSR te frontend-it, qe
+# ndryshe do te perplaseshin ne te njejtin path (p.sh. GET /products/123
+# eshte njekohesisht faqe SSR e frontend-it dhe endpoint API i backend-it).
+app.include_router(auth_router, prefix="/api")
+app.include_router(users_router, prefix="/api")
+app.include_router(products_router, prefix="/api")
+app.include_router(favorites_router, prefix="/api")
+app.include_router(bid_router, prefix="/api")
+app.include_router(order_router, prefix="/api")
+app.include_router(product_images_router, prefix="/api")
+app.include_router(reviews_router, prefix="/api")
+app.include_router(review_public_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")
+app.include_router(price_estimate_router, prefix="/api")
+app.include_router(image_analysis_router, prefix="/api")
+app.include_router(image_search_router, prefix="/api")
+app.include_router(payment_router, prefix="/api")
+app.include_router(notification_router, prefix="/api")
+app.include_router(conversation_router, prefix="/api")
+app.include_router(ws_router, prefix="/api")
 
 @app.get("/")
 def read_root():

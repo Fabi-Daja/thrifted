@@ -1,7 +1,17 @@
 import axios, { type AxiosError } from "axios"
 import { clearToken, getToken } from "@/lib/token"
 
-const baseURL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
+// Backend-i i ka te gjitha rruget nen prefiksin /api (faza-6, Nginx routing).
+// Ne SSR (loaders qe xhirojne brenda procesit Node, jo browser) VITE_API_URL
+// mund te jete relative (p.sh. "/api" pas Nginx) - kjo s'ka kuptim per axios
+// ne Node (s'ka "faqe" kundrejt te ciles te zgjerohet), prandaj server-i
+// perdor gjithmone nje URL absolute drejt backend-it (API_INTERNAL_URL,
+// runtime env - jo VITE_*, qe eshte build-time), tipikisht http://backend:8000/api
+// brenda rrjetit te docker-compose.
+const baseURL =
+  typeof window === "undefined"
+    ? process.env.API_INTERNAL_URL || "http://127.0.0.1:8000/api"
+    : import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"
 
 // Do not set a global Content-Type so FormData uploads get the correct boundary.
 export const axiosInstance = axios.create({

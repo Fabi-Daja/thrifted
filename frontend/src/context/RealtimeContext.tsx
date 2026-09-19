@@ -9,8 +9,13 @@ import type { RealtimeEvent } from "@/types"
 const RealtimeContext = createContext<null>(null)
 
 function getWsUrl(): string {
-  const apiBase: string = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
-  return apiBase.replace(/^http/, "ws") + "/ws"
+  // Backend-i i ka te gjitha rruget (perfshi /ws) nen prefiksin /api (faza-6, Nginx routing)
+  const apiBase: string = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"
+  // WebSocket() kerkon URL absolute me skeme ws/wss - nese VITE_API_URL eshte
+  // relative (p.sh. "/api", pas Nginx-it), e zgjerojme me origin-in e faqes.
+  // (thirret vetem brenda useEffect, pra window ekziston gjithmone ketu)
+  const absoluteBase = apiBase.startsWith("http") ? apiBase : `${window.location.origin}${apiBase}`
+  return absoluteBase.replace(/^http/, "ws") + "/ws"
 }
 
 const MAX_RETRY_DELAY = 15_000

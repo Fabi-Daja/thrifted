@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: thrifted
+      POSTGRES_PASSWORD: thrifted
+      POSTGRES_DB: thrifted
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U thrifted -d thrifted"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://thrifted:thrifted@postgres:5432/thrifted
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Relative, jo absolute - kerkesat e klientit shkojne te i njejti
+        # origin (Nginx, porta 80) qe shperben edhe vete faqen, jo direkt
+        # te backend-i (i cili s'do te jete i ekspozuar publikisht ne VPS).
+        VITE_API_URL: /api
+    restart: unless-stopped
+    environment:
+      # Runtime (jo build-time si VITE_*) - e perdor loaders SSR qe xhirojne
+      # brenda procesit Node te vete kontejnerit frontend, jo browser-i i
+      # userit; prandaj emri i shërbimit ne rrjetin e brendshem te compose-it.
+      API_INTERNAL_URL: http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:

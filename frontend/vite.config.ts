@@ -12,6 +12,14 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Docker/VPS (faza-6) run SSR si proces Node i thjeshtë brenda kontejnerit,
+  // jo Cloudflare Workers — prandaj preset-i eksplicit "node-server" këtu.
+  // I anashkalohet automatikisht kur ndërtohet brenda sandbox-it të Lovable-it
+  // (shih @lovable.dev/vite-tanstack-config: isSandbox e detyron cloudflare-module
+  // pavarësisht ç'është këtu), pra s'prish deploy-in e Lovable/Cloudflare.
+  nitro: {
+    preset: "node-server",
+  },
   vite: {
     resolve: {
       tsconfigPaths: true,
